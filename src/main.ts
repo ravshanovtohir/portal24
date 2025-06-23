@@ -4,16 +4,16 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
 import { APP_PORT } from './config';
-// import { WinstonLoggerService } from '@logger';
-// import { LoggingInterceptor } from '@interceptors';
-// import { ParseFiltersPipe } from '@pipes';
-// import { AllExceptionFilter } from '@exceptions';
-// import { globalHeaderParametrs } from '@enums';
+import { WinstonLoggerService } from '@logger';
+import { LoggingInterceptor } from '@interceptors';
+import { ParseFiltersPipe } from '@pipes';
+import { AllExceptionFilter } from '@exceptions';
+import { globalHeaderParametrs } from '@enums';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // const logger = app.get(WinstonLoggerService);
-  // app.useGlobalInterceptors(new LoggingInterceptor(logger));
+  const logger = app.get(WinstonLoggerService);
+  app.useGlobalInterceptors(new LoggingInterceptor(logger));
 
   app.enableCors({
     origin: '*',
@@ -26,18 +26,18 @@ async function bootstrap() {
     prefix: 'api/v',
   });
 
-  // (new ParseFiltersPipe(),
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  (new ParseFiltersPipe(),
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        transformOptions: {
+          enableImplicitConversion: true,
+        },
+      }),
+    ));
 
-  // app.useGlobalFilters(new AllExceptionFilter());
+  app.useGlobalFilters(new AllExceptionFilter());
 
   app.use(
     '/docs',
@@ -58,7 +58,7 @@ async function bootstrap() {
       scheme: 'bearer',
       bearerFormat: 'JWT',
     })
-    // .addGlobalParameters(...globalHeaderParametrs)
+    .addGlobalParameters(...globalHeaderParametrs)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

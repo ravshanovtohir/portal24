@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from '@config';
-// import { WinstonLoggerService } from '@logger';
-// import { LoggingInterceptor } from '@interceptors';
+import { WinstonLoggerService } from '@logger';
+import { LoggingInterceptor } from '@interceptors';
 import { UserModule, PostModule, CommentModule, PrismaModule, GatewayModule } from '@modules';
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { UserModule, PostModule, CommentModule, PrismaModule, GatewayModule } fr
     GatewayModule,
   ],
   controllers: [],
-  providers: [],
-  exports: [],
+  providers: [WinstonLoggerService, LoggingInterceptor],
+  exports: [WinstonLoggerService],
 })
 export class AppModule {}
