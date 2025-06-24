@@ -61,13 +61,13 @@ model User {
 }
 
 model Category {
-  id         Int      @id @default(autoincrement())
+  id         Int       @id @default(autoincrement())
   name_uz    String?
   name_ru    String?
   name_en    String
-  status     Status   @default(ACTIVE)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  status     Status    @default(ACTIVE)
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
   news       News[]
 
   @@map("category")

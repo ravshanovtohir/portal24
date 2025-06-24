@@ -2,6 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto } from './dto';
 import { PrismaService } from '@prisma';
 import { paginate } from '@helpers';
+import { Status } from '@prisma/client';
+import { CategoryResponse } from '@interfaces';
 
 @Injectable()
 export class NewsService {
@@ -64,6 +66,35 @@ export class NewsService {
       data: post,
     };
   }
+
+  async getCategories(lang: string) {
+    const categories = await this.prisma.category.findMany({
+      where: {
+        status: Status.ACTIVE,
+      },
+      select: {
+        id: true,
+        name_uz: true,
+        name_ru: true,
+        name_en: true,
+      },
+    });
+
+    const result: CategoryResponse[] = [];
+
+    categories?.map((category: any) => {
+      result?.push({
+        id: category?.id,
+        name: category[`name_${lang}`],
+      });
+    });
+
+    return {
+      status: HttpStatus.OK,
+      data: result,
+    };
+  }
+
   create(createNewsDto: CreateNewsDto) {
     return 'This action adds a new news';
   }
