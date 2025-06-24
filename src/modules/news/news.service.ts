@@ -1,5 +1,5 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { GetNewsDto, CreateNewsDto, UpdateNewsDto } from './dto';
+import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
 import { paginate } from '@helpers';
 import { Status } from '@prisma/client';
@@ -16,9 +16,12 @@ export class NewsService {
       sort: query?.sort,
       select: {
         id: true,
-        title: true,
-        summary: true,
-        content: true,
+        title_uz: true,
+        title_ru: true,
+        title_en: true,
+        summary_uz: true,
+        summary_ru: true,
+        summary_en: true,
         category: true,
         tags: true,
         author: {
@@ -45,9 +48,12 @@ export class NewsService {
       },
       select: {
         id: true,
-        title: true,
-        summary: true,
-        content: true,
+        title_uz: true,
+        title_ru: true,
+        title_en: true,
+        summary_uz: true,
+        summary_ru: true,
+        summary_en: true,
         category: true,
         tags: true,
         author: {
@@ -95,15 +101,112 @@ export class NewsService {
     };
   }
 
-  create(createNewsDto: CreateNewsDto) {
-    return 'This action adds a new news';
+  async create(createNewsDto: CreateNewsDto) {
+    const existingSlug = await this.prisma.news.findUnique({
+      where: { slug: createNewsDto.slug },
+    });
+    if (existingSlug) {
+      throw new ConflictException('this slug is already in use');
+    }
+    return this.prisma.news.create({
+      data: {
+        title_uz: createNewsDto.title_uz,
+        title_ru: createNewsDto.title_ru,
+        title_en: createNewsDto.title_en,
+        summary_uz: createNewsDto.summary_uz,
+        summary_ru: createNewsDto.summary_ru,
+        summary_en: createNewsDto.summary_en,
+        content_uz: createNewsDto.content_uz,
+        content_ru: createNewsDto.content_ru,
+        content_en: createNewsDto.content_en,
+        image_url: createNewsDto.image_url,
+        slug: createNewsDto.slug,
+        tags: createNewsDto.tags,
+        category: { connect: { id: createNewsDto.category_id } },
+        author: { connect: { id: createNewsDto.author_id } },
+      },
+      include: {
+        author: { select: { id: true, email: true } },
+        category: true,
+      },
+    });
   }
 
-  update(id: number, updateNewsDto: UpdateNewsDto) {
-    return `This action updates a #${id} news`;
+  async update(id: number, updateNewsDto: UpdateNewsDto) {
+    const news = await this.prisma.news.findUnique({ where: { id } });
+    if (!news) {
+      throw new NotFoundException();
+    }
+    if (updateNewsDto.slug) {
+      const existingSlug = await this.prisma.news.findUnique({
+        where: { slug: updateNewsDto.slug },
+      });
+      if (existingSlug && existingSlug.id !== id) {
+        throw new ConflictException('Bu slug allaqachon ishlatilgan');
+      }
+    }
+    return this.prisma.news.update({
+      where: { id },
+      data: {
+        ...updateNewsDto,
+        category: updateNewsDto.category_id ? { connect: { id: updateNewsDto.category_id } } : undefined,
+      },
+      include: { author: true, category: true },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} news`;
+  async remove(id: number) {
+    const news = await this.prisma.news.findUnique({ where: { id } });
+    if (!news) {
+      throw new NotFoundException();
+    }
+    return this.prisma.news.delete({ where: { id } });
+  }
+
+  async createLike(createLikeDto: CreateLikeDto) {
+    const existingLike = await this.prisma.like.findUnique({
+      where: {
+        user_id_news_id: {
+          user_id: createLikeDto.user_id,
+          news_id: createLikeDto.news_id,
+        },
+      },
+    });
+    if (existingLike) {
+      throw new ConflictException('Bu yangilikni allaqachon yoqtirgansiz');
+    }
+    return this.prisma.like.create({
+      data: {
+        user_id: createLikeDto.user_id,
+        news_id: createLikeDto.news_id,
+      },
+    });
+  }
+
+  async removeLike(user_id: number, news_id: number) {
+    const like = await this.prisma.like.findUnique({
+      where: {
+        user_id_news_id: { user_id, news_id },
+      },
+    });
+    if (!like) {
+      throw new NotFoundException('Like topilmadi');
+    }
+    return this.prisma.like.delete({
+      where: {
+        user_id_news_id: { user_id, news_id },
+      },
+    });
+  }
+
+  async createComment(createCommentDto: CreateCommentDto) {
+    return this.prisma.comment.create({
+      data: {
+        content: createCommentDto.content,
+        user_id: createCommentDto.user_id,
+        news_id: createCommentDto.news_id,
+      },
+      include: { user: { select: { id: true, email: true } } },
+    });
   }
 }

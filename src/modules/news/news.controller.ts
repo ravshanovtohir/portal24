@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { NewsService } from './news.service';
-import { CreateNewsDto, UpdateNewsDto, GetNewsDto } from './dto';
+import { CreateNewsDto, UpdateNewsDto, GetNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { HeadersValidation } from '@decorators';
-import { DeviceHeadersDto } from '@enums';
+import { DeviceHeadersDto, ParamId } from '@enums';
 
 @Controller('news')
 export class NewsController {
@@ -18,22 +18,37 @@ export class NewsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string) {
     return this.newsService.findOne(+id);
   }
 
   @Post()
-  create(@Body() createNewsDto: CreateNewsDto) {
+  async create(@Body() createNewsDto: CreateNewsDto) {
     return this.newsService.create(createNewsDto);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateNewsDto: UpdateNewsDto) {
-    return this.newsService.update(+id, updateNewsDto);
+  @Patch('id')
+  async update(@Param() param: ParamId, @Body() data: UpdateNewsDto) {
+    return this.newsService.update(param.id, data);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.newsService.remove(+id);
+  async remove(@Param() param: ParamId) {
+    return this.newsService.remove(param.id);
+  }
+
+  @Post('like')
+  like(@Body() createLikeDto: CreateLikeDto) {
+    return this.newsService.createLike(createLikeDto);
+  }
+
+  @Patch('unlike')
+  unlike(@Param('user_id') user_id: number, @Param('news_id') news_id: number) {
+    return this.newsService.removeLike(user_id, news_id);
+  }
+
+  @Post('comment')
+  async comment(@Body() createCommentDto: CreateCommentDto) {
+    return this.newsService.createComment(createCommentDto);
   }
 }
