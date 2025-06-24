@@ -1,5 +1,5 @@
 import { type Prisma, type PrismaClient } from '@prisma/client';
-import { HttpException } from '@nestjs/common';
+import { HttpException, HttpStatus } from '@nestjs/common';
 import { Models } from '@enums';
 import { FilterService } from '@helpers';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
@@ -7,6 +7,7 @@ export const prisma = new PrismaService();
 type TFindMany<T extends Models> = Parameters<PrismaClient[T]['findMany']>[0];
 
 export type PaginationResponse<T> = {
+  status: number;
   data: T[];
   totalPage: number;
   currentPage: number;
@@ -69,6 +70,7 @@ export async function paginate<
   });
 
   return {
+    status: HttpStatus.OK,
     data: items,
     totalPage: totalPages,
     currentPage: page,

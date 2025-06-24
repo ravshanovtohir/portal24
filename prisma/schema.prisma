@@ -27,6 +27,26 @@ model Post {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   author       User     @relation(fields: [author_id], references: [id])
+
+  @@map("post")
+}
+
+model News {
+  id          Int      @id @default(autoincrement())
+  title       String   @db.VarChar(255)
+  summary     String?  @db.VarChar(500)
+  content     String   @db.Text
+  image_url   String?  @db.Text
+  tags        String[]
+  author_id   Int
+  categoty_id Int
+  views       Int      @default(0)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  author      User     @relation(fields: [author_id], references: [id])
+  category    Category @relation(fields: [categoty_id], references: [id])
+
+  @@map("news")
 }
 
 model User {
@@ -35,4 +55,25 @@ model User {
   password String @db.VarChar(255)
   role     String @default("user") @db.VarChar(50)
   posts    Post[]
+  news     News[]
+
+  @@map("user")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name_uz    String?
+  name_ru    String?
+  name_en    String
+  status     Status   @default(ACTIVE)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  news       News[]
+
+  @@map("category")
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
 }
