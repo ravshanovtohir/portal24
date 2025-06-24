@@ -8,8 +8,8 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentService.create(createCommentDto);
+  create(@Body() data: CreateCommentDto) {
+    return this.commentService.create(data);
   }
 
   @Get()

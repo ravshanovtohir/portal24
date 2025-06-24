@@ -75,29 +75,36 @@ export class NewsService {
 
   async getCategories(lang: string) {
     const categories = await this.prisma.category.findMany({
-      where: {
-        status: Status.ACTIVE,
-      },
+      // where: {
+      //   status: Status.ACTIVE,
+      // },
       select: {
         id: true,
-        name_uz: true,
-        name_ru: true,
-        name_en: true,
+        [`name_${lang}`]: true,
       },
     });
 
     const result: CategoryResponse[] = [];
 
-    categories?.map((category: any) => {
-      result?.push({
-        id: category?.id,
-        name: category[`name_${lang}`],
-      });
-    });
+    // categories?.map((category) => {
+    //   result?.push({
+    //     id: category?.id,
+    //     name: category?.,
+    //   });
+    // });
 
     return {
       status: HttpStatus.OK,
-      data: result,
+      data: categories.map((el) => {
+        return {
+          data: [
+            {
+              id: el.id,
+              name: el[`name_${lang}`],
+            },
+          ],
+        };
+      }),
     };
   }
 
@@ -108,7 +115,8 @@ export class NewsService {
     if (existingSlug) {
       throw new ConflictException('this slug is already in use');
     }
-    return this.prisma.news.create({
+
+    await this.prisma.news.create({
       data: {
         title_uz: createNewsDto.title_uz,
         title_ru: createNewsDto.title_ru,
@@ -130,6 +138,10 @@ export class NewsService {
         category: true,
       },
     });
+
+    return {
+      status: HttpStatus.OK,
+    };
   }
 
   async update(id: number, updateNewsDto: UpdateNewsDto) {

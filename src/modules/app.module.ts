@@ -6,7 +6,7 @@ import { LoggingInterceptor } from '@interceptors';
 import {
   UserModule,
   PostModule,
-  CommentModule,
+  // CommentModule,
   PrismaModule,
   GatewayModule,
   NewsModule,
@@ -20,7 +20,7 @@ import {
     }),
     UserModule,
     PostModule,
-    CommentModule,
+    // CommentModule,
     PrismaModule,
     GatewayModule,
     NewsModule,

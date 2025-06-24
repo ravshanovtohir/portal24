@@ -23,8 +23,8 @@ export class NewsController {
   }
 
   @Post()
-  async create(@Body() createNewsDto: CreateNewsDto) {
-    return this.newsService.create(createNewsDto);
+  async create(@Body() data: CreateNewsDto) {
+    return this.newsService.create(data);
   }
 
   @Patch('id')
@@ -38,8 +38,8 @@ export class NewsController {
   }
 
   @Post('like')
-  like(@Body() createLikeDto: CreateLikeDto) {
-    return this.newsService.createLike(createLikeDto);
+  like(@Body() data: CreateLikeDto) {
+    return this.newsService.createLike(data);
   }
 
   @Patch('unlike')
@@ -48,7 +48,7 @@ export class NewsController {
   }
 
   @Post('comment')
-  async comment(@Body() createCommentDto: CreateCommentDto) {
-    return this.newsService.createComment(createCommentDto);
+  async comment(@Body() data: CreateCommentDto) {
+    return this.newsService.createComment(data);
   }
 }
