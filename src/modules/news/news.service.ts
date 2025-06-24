@@ -75,9 +75,9 @@ export class NewsService {
 
   async getCategories(lang: string) {
     const categories = await this.prisma.category.findMany({
-      // where: {
-      //   status: Status.ACTIVE,
-      // },
+      where: {
+        status: Status.ACTIVE,
+      },
       select: {
         id: true,
         [`name_${lang}`]: true,
@@ -85,53 +85,48 @@ export class NewsService {
     });
 
     const result: CategoryResponse[] = [];
-
-    // categories?.map((category) => {
-    //   result?.push({
-    //     id: category?.id,
-    //     name: category?.,
-    //   });
-    // });
-
-    return {
-      status: HttpStatus.OK,
-      data: categories.map((el) => {
-        return {
-          data: [
-            {
-              id: el.id,
-              name: el[`name_${lang}`],
-            },
-          ],
-        };
-      }),
-    };
+    return categories?.map((category) => {
+      return {
+        id: category?.id,
+        name: category[`name_${lang}`],
+      };
+    });
   }
 
-  async create(createNewsDto: CreateNewsDto) {
+  async create(data: CreateNewsDto) {
     const existingSlug = await this.prisma.news.findUnique({
-      where: { slug: createNewsDto.slug },
+      where: { slug: data.slug },
     });
     if (existingSlug) {
       throw new ConflictException('this slug is already in use');
     }
 
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id: data.category_id,
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException();
+    }
+
     await this.prisma.news.create({
       data: {
-        title_uz: createNewsDto.title_uz,
-        title_ru: createNewsDto.title_ru,
-        title_en: createNewsDto.title_en,
-        summary_uz: createNewsDto.summary_uz,
-        summary_ru: createNewsDto.summary_ru,
-        summary_en: createNewsDto.summary_en,
-        content_uz: createNewsDto.content_uz,
-        content_ru: createNewsDto.content_ru,
-        content_en: createNewsDto.content_en,
-        image_url: createNewsDto.image_url,
-        slug: createNewsDto.slug,
-        tags: createNewsDto.tags,
-        category: { connect: { id: createNewsDto.category_id } },
-        author: { connect: { id: createNewsDto.author_id } },
+        title_uz: data.title_uz,
+        title_ru: data.title_ru,
+        title_en: data.title_en,
+        summary_uz: data.summary_uz,
+        summary_ru: data.summary_ru,
+        summary_en: data.summary_en,
+        content_uz: data.content_uz,
+        content_ru: data.content_ru,
+        content_en: data.content_en,
+        image_url: data.image_url,
+        slug: data.slug,
+        tags: data.tags,
+        category: { connect: { id: data.category_id } },
+        author: { connect: { id: data.author_id } },
       },
       include: {
         author: { select: { id: true, email: true } },
