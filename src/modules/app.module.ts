@@ -11,6 +11,7 @@ import {
   GatewayModule,
   NewsModule,
   CategoryModule,
+  LidModule,
 } from '@modules';
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import {
       isGlobal: true,
       validate,
     }),
+    LidModule,
     UserModule,
     PostModule,
     // CommentModule,

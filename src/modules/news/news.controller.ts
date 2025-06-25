@@ -86,4 +86,9 @@ export class NewsController {
   async comment(@Body() data: CreateCommentDto, @Req() request: IUser) {
     return this.newsService.createComment(data, request?.id);
   }
+
+  @Post('lid')
+  async newLid(@Body() data: CreateCommentDto, @Req() request: IUser) {
+    return this.newsService.createComment(data, request?.id);
+  }
 }

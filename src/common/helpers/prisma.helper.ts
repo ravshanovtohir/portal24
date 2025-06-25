@@ -7,7 +7,6 @@ export const prisma = new PrismaService();
 type TFindMany<T extends Models> = Parameters<PrismaClient[T]['findMany']>[0];
 
 export type PaginationResponse<T> = {
-  status: number;
   data: T[];
   totalPage: number;
   currentPage: number;
@@ -63,6 +62,8 @@ export async function paginate<
   const items = await client.findMany({
     skip: Math.abs(offset),
     take: size,
+    status: HttpStatus.OK,
+
     orderBy,
     where: { ...where, ...options.where },
     select,
@@ -70,7 +71,6 @@ export async function paginate<
   });
 
   return {
-    status: HttpStatus.OK,
     data: items,
     totalPage: totalPages,
     currentPage: page,
