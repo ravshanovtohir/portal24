@@ -43,6 +43,7 @@ model News {
   content_ru  String?   @db.Text
   content_en  String    @db.Text
   image_url   String?   @db.Text
+  status      Status    @default(ACTIVE)
   slug_uz     String?
   slug_ru     String?
   slug_en     String?

@@ -9,6 +9,7 @@ import slugify from 'slugify';
 @Injectable()
 export class NewsService {
   constructor(private readonly prisma: PrismaService) {}
+
   async findAll(query: GetNewsDto) {
     const news = await paginate('news', {
       page: query?.page,
@@ -36,16 +37,19 @@ export class NewsService {
       },
     });
 
-    return {
-      status: HttpStatus.OK,
-      data: news,
-    };
+    return news;
   }
-  // Comment relatsiyasi
-  async findOne(id: number) {
-    const post = await this.prisma.news.findUnique({
+
+  async findOne(slug: string) {
+    const post = await this.prisma.news.findFirst({
       where: {
-        id: id,
+        OR: [
+          {
+            slug_uz: slug,
+            slug_ru: slug,
+            summary_en: slug,
+          },
+        ],
       },
       select: {
         id: true,
@@ -68,10 +72,7 @@ export class NewsService {
       },
     });
 
-    return {
-      status: HttpStatus.OK,
-      data: post,
-    };
+    return post;
   }
 
   async getCategories(lang: string) {
@@ -85,7 +86,6 @@ export class NewsService {
       },
     });
 
-    const result: CategoryResponse[] = [];
     return categories?.map((category) => {
       return {
         id: category?.id,
@@ -94,7 +94,7 @@ export class NewsService {
     });
   }
 
-  async create(data: CreateNewsDto, authorId: number = 1) {
+  async create(data: CreateNewsDto, authorId: number = 1, file: Express.Multer.File) {
     const category = await this.prisma.category.findUnique({
       where: {
         id: data.category_id,
@@ -116,7 +116,7 @@ export class NewsService {
         content_uz: data.content_uz,
         content_ru: data.content_ru,
         content_en: data.content_en,
-        image_url: data.image_url,
+        image_url: file.filename,
         slug_uz: slugify(data.title_uz, { lower: true, strict: true }),
         slug_ru: slugify(data.title_ru, { lower: true, strict: true }),
         slug_en: slugify(data.title_en, { lower: true, strict: true }),
@@ -130,15 +130,18 @@ export class NewsService {
       },
     });
 
-    return {
-      status: HttpStatus.OK,
-    };
+    return 'Пост успешно создан!';
   }
 
-  async update(id: number, updateNewsDto: UpdateNewsDto) {
-    const news = await this.prisma.news.findUnique({ where: { id } });
+  async update(id: number, data: UpdateNewsDto) {
+    const news = await this.prisma.news.findUnique({
+      where: {
+        id: id,
+      },
+    });
+
     if (!news) {
-      throw new NotFoundException();
+      throw new NotFoundException('Пост с указанным идентификатором не найден!');
     }
     // if (updateNewsDto.slug) {
     //   const existingSlug = await this.prisma.news.findUnique({
@@ -151,8 +154,8 @@ export class NewsService {
     return this.prisma.news.update({
       where: { id },
       data: {
-        ...updateNewsDto,
-        category: updateNewsDto.category_id ? { connect: { id: updateNewsDto.category_id } } : undefined,
+        ...data,
+        category: data.category_id ? { connect: { id: data.category_id } } : undefined,
       },
       include: { author: true, category: true },
     });
@@ -166,35 +169,42 @@ export class NewsService {
     return this.prisma.news.delete({ where: { id } });
   }
 
-  async createLike(createLikeDto: CreateLikeDto) {
+  async createLike(createLikeDto: CreateLikeDto, userId: number) {
     const existingLike = await this.prisma.like.findUnique({
       where: {
         user_id_news_id: {
-          user_id: createLikeDto.user_id,
+          user_id: userId,
           news_id: createLikeDto.news_id,
         },
       },
     });
+
     if (existingLike) {
-      throw new ConflictException('Bu yangilikni allaqachon yoqtirgansiz');
+      throw new ConflictException('Вам уже понравилась эта новость!');
     }
-    return this.prisma.like.create({
+
+    return await this.prisma.like.create({
       data: {
-        user_id: createLikeDto.user_id,
+        user_id: userId,
         news_id: createLikeDto.news_id,
       },
     });
   }
 
-  async removeLike(user_id: number, news_id: number) {
+  async removeLike(news_id: number, user_id: number) {
     const like = await this.prisma.like.findUnique({
       where: {
-        user_id_news_id: { user_id, news_id },
+        user_id_news_id: {
+          user_id,
+          news_id,
+        },
       },
     });
+
     if (!like) {
-      throw new NotFoundException('Like topilmadi');
+      throw new NotFoundException('Нравится не найдено!');
     }
+
     return this.prisma.like.delete({
       where: {
         user_id_news_id: { user_id, news_id },
@@ -202,11 +212,11 @@ export class NewsService {
     });
   }
 
-  async createComment(createCommentDto: CreateCommentDto) {
+  async createComment(createCommentDto: CreateCommentDto, userId: number) {
     return this.prisma.comment.create({
       data: {
         content: createCommentDto.content,
-        user_id: createCommentDto.user_id,
+        user_id: userId,
         news_id: createCommentDto.news_id,
       },
       include: { user: { select: { id: true, email: true } } },

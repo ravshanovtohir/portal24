@@ -1,9 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  Req,
+  UseInterceptors,
+  BadRequestException,
+  UploadedFile,
+} from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto, UpdateNewsDto, GetNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { HeadersValidation } from '@decorators';
 import { DeviceHeadersDto, ParamId } from '@enums';
 import { IUser } from '@interfaces';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { v4 as uuidv4 } from 'uuid';
+import { diskStorage } from 'multer';
 
 @Controller('news')
 export class NewsController {
@@ -19,13 +35,31 @@ export class NewsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.newsService.findOne(+id);
+  async findOne(@Param('slug') slug: string) {
+    return this.newsService.findOne(slug);
   }
 
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/insurance_partner_logo',
+        filename: (_, file, cb) => {
+          const uuid = uuidv4();
+          const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
+          cb(null, filename);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg)$/)) {
+          return cb(new BadRequestException('Неверный тип файла!'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
   @Post()
-  async create(@Body() data: CreateNewsDto, @Req() request: IUser) {
-    return this.newsService.create(data, request?.id);
+  async create(@Body() data: CreateNewsDto, @Req() request: IUser, @UploadedFile() file: Express.Multer.File) {
+    return this.newsService.create(data, request?.id, file);
   }
 
   @Patch('id')
@@ -39,17 +73,17 @@ export class NewsController {
   }
 
   @Post('like')
-  like(@Body() data: CreateLikeDto) {
-    return this.newsService.createLike(data);
+  like(@Body() data: CreateLikeDto, @Req() request: IUser) {
+    return this.newsService.createLike(data, request?.id);
   }
 
   @Patch('unlike')
-  unlike(@Param('user_id') user_id: number, @Param('news_id') news_id: number) {
-    return this.newsService.removeLike(user_id, news_id);
+  unlike(@Param('news_id') news_id: number, @Req() request: IUser) {
+    return this.newsService.removeLike(news_id, request?.id);
   }
 
   @Post('comment')
-  async comment(@Body() data: CreateCommentDto) {
-    return this.newsService.createComment(data);
+  async comment(@Body() data: CreateCommentDto, @Req() request: IUser) {
+    return this.newsService.createComment(data, request?.id);
   }
 }

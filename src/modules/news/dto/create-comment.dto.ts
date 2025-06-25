@@ -13,16 +13,6 @@ export class CreateCommentDto {
   content: string;
 
   @ApiProperty({
-    description: 'user id',
-    example: 1,
-    type: Number,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsInt()
-  user_id: number;
-
-  @ApiProperty({
     description: 'news id',
     example: 1,
     type: Number,

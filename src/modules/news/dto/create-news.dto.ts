@@ -94,16 +94,6 @@ export class CreateNewsDto {
   content_en: string;
 
   @ApiProperty({
-    description: 'image url for the news',
-    example: 'https://example.com/images/metro-station.jpg',
-    type: String,
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  image_url?: string;
-
-  @ApiProperty({
     description: 'list of tags for the news',
     example: ['metro', 'tashkent', 'infrastructure'],
     type: [String],
