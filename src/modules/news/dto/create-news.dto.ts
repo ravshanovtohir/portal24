@@ -104,16 +104,6 @@ export class CreateNewsDto {
   image_url?: string;
 
   @ApiProperty({
-    description: 'unique slug for the news',
-    example: 'tashkent-metro-2025',
-    type: String,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsString()
-  slug: string;
-
-  @ApiProperty({
     description: 'list of tags for the news',
     example: ['metro', 'tashkent', 'infrastructure'],
     type: [String],
@@ -123,16 +113,6 @@ export class CreateNewsDto {
   @IsArray()
   @IsString({ each: true })
   tags: string[];
-
-  @ApiProperty({
-    description: 'author id',
-    example: 1,
-    type: Number,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsInt()
-  author_id: number;
 
   @ApiProperty({
     description: 'category id',

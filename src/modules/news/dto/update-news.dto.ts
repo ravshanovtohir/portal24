@@ -93,15 +93,6 @@ export class UpdateNewsDto {
   image_url?: string;
 
   @ApiProperty({
-    description: 'Slug (unikal identifikator)',
-    example: 'tashkent-metro-updated-2025',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  slug?: string;
-
-  @ApiProperty({
     description: "Teglar ro'yxati",
     example: ['metro', 'modernizatsiya', 'Toshkent'],
     type: [String],

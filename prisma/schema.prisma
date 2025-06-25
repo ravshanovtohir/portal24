@@ -43,7 +43,9 @@ model News {
   content_ru  String?   @db.Text
   content_en  String    @db.Text
   image_url   String?   @db.Text
-  slug        String    @unique @db.VarChar(255)
+  slug_uz     String?
+  slug_ru     String?
+  slug_en     String?
   tags        String[]
   author_id   Int
   categoty_id Int
@@ -52,13 +54,13 @@ model News {
   updated_at  DateTime? @updatedAt
   author      User      @relation(fields: [author_id], references: [id])
   category    Category  @relation(fields: [categoty_id], references: [id])
-  likes       Like[] // Like relatsiyasi
-  comments    Comment[] // Comment relatsiyasi
+  likes       Like[]
+  comments    Comment[]
 
   @@index([title_uz])
   @@index([title_ru])
   @@index([title_en])
-  @@index([slug])
+  @@index([slug_uz, slug_ru, slug_en])
   @@map("news")
 }
 

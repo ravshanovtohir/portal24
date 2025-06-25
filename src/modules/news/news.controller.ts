@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Req } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto, UpdateNewsDto, GetNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { HeadersValidation } from '@decorators';
 import { DeviceHeadersDto, ParamId } from '@enums';
+import { IUser } from '@interfaces';
 
 @Controller('news')
 export class NewsController {
@@ -23,8 +24,8 @@ export class NewsController {
   }
 
   @Post()
-  async create(@Body() data: CreateNewsDto) {
-    return this.newsService.create(data);
+  async create(@Body() data: CreateNewsDto, @Req() request: IUser) {
+    return this.newsService.create(data, request?.id);
   }
 
   @Patch('id')

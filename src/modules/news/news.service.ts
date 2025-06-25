@@ -4,6 +4,7 @@ import { PrismaService } from '@prisma';
 import { paginate } from '@helpers';
 import { Status } from '@prisma/client';
 import { CategoryResponse } from '@interfaces';
+import slugify from 'slugify';
 
 @Injectable()
 export class NewsService {
@@ -40,7 +41,7 @@ export class NewsService {
       data: news,
     };
   }
-
+  // Comment relatsiyasi
   async findOne(id: number) {
     const post = await this.prisma.news.findUnique({
       where: {
@@ -93,14 +94,7 @@ export class NewsService {
     });
   }
 
-  async create(data: CreateNewsDto) {
-    const existingSlug = await this.prisma.news.findUnique({
-      where: { slug: data.slug },
-    });
-    if (existingSlug) {
-      throw new ConflictException('this slug is already in use');
-    }
-
+  async create(data: CreateNewsDto, authorId: number = 1) {
     const category = await this.prisma.category.findUnique({
       where: {
         id: data.category_id,
@@ -108,7 +102,7 @@ export class NewsService {
     });
 
     if (!category) {
-      throw new NotFoundException();
+      throw new NotFoundException('Категория с указанным идентификатором не найдена!');
     }
 
     await this.prisma.news.create({
@@ -123,10 +117,12 @@ export class NewsService {
         content_ru: data.content_ru,
         content_en: data.content_en,
         image_url: data.image_url,
-        slug: data.slug,
+        slug_uz: slugify(data.title_uz, { lower: true, strict: true }),
+        slug_ru: slugify(data.title_ru, { lower: true, strict: true }),
+        slug_en: slugify(data.title_en, { lower: true, strict: true }),
         tags: data.tags,
-        category: { connect: { id: data.category_id } },
-        author: { connect: { id: data.author_id } },
+        categoty_id: data?.category_id,
+        author_id: authorId,
       },
       include: {
         author: { select: { id: true, email: true } },
@@ -144,14 +140,14 @@ export class NewsService {
     if (!news) {
       throw new NotFoundException();
     }
-    if (updateNewsDto.slug) {
-      const existingSlug = await this.prisma.news.findUnique({
-        where: { slug: updateNewsDto.slug },
-      });
-      if (existingSlug && existingSlug.id !== id) {
-        throw new ConflictException('Bu slug allaqachon ishlatilgan');
-      }
-    }
+    // if (updateNewsDto.slug) {
+    //   const existingSlug = await this.prisma.news.findUnique({
+    //     where: { slug: updateNewsDto.slug },
+    //   });
+    //   if (existingSlug && existingSlug.id !== id) {
+    //     throw new ConflictException('Bu slug allaqachon ishlatilgan');
+    //   }
+    // }
     return this.prisma.news.update({
       where: { id },
       data: {
