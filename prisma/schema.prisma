@@ -47,8 +47,8 @@ model News {
   slug_uz     String?
   slug_ru     String?
   slug_en     String?
-  tags        String[] 
-  is_hot      Boolean? @default(false)
+  tags        String[]
+  is_hot      Boolean?  @default(false)
   author_id   Int
   categoty_id Int
   views       Int       @default(0)
@@ -126,6 +126,10 @@ model Lid {
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+}
+
+model Weather {
+  id Int @id @default(autoincrement())
 }
 
 enum Status {
