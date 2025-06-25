@@ -62,8 +62,6 @@ export async function paginate<
   const items = await client.findMany({
     skip: Math.abs(offset),
     take: size,
-    status: HttpStatus.OK,
-
     orderBy,
     where: { ...where, ...options.where },
     select,

@@ -25,8 +25,8 @@ import { diskStorage } from 'multer';
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
   @Get()
-  findAll(@Query() query: GetNewsDto) {
-    return this.newsService.findAll(query);
+  findAll(@Query() query: GetNewsDto, @HeadersValidation() headers: DeviceHeadersDto) {
+    return this.newsService.findAll(query, headers.lang);
   }
 
   @Get('category')

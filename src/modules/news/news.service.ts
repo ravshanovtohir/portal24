@@ -10,7 +10,9 @@ import slugify from 'slugify';
 export class NewsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(query: GetNewsDto) {
+  async findAll(query: GetNewsDto, lang: string) {
+    console.log(query);
+
     const news = await paginate('news', {
       page: query?.page,
       size: query?.size,
@@ -18,13 +20,17 @@ export class NewsService {
       sort: query?.sort,
       select: {
         id: true,
-        title_uz: true,
-        title_ru: true,
-        title_en: true,
-        summary_uz: true,
-        summary_ru: true,
-        summary_en: true,
-        category: true,
+        [`title_${lang}`]: true,
+        [`summary_${lang}`]: true,
+        [`content_${lang}`]: true,
+        status: true,
+        category: {
+          select: {
+            id: true,
+            [`name_${lang}`]: true,
+          },
+        },
+        image_url: true,
         tags: true,
         author: {
           select: {
@@ -33,10 +39,25 @@ export class NewsService {
           },
         },
         views: true,
+        comments: true,
+        likes: true,
         created_at: true,
       },
     });
 
+    // return news?.data?.map((el) => {
+    //   return {
+    //     id: el?.id,
+    //     title: el?.[`title_${lang}`],
+    //     summary: el?.[`summary_${lang}`],
+    //     content: el?.[`content_${lang}`],
+    //     status: el?.status,
+    //     image: el?.image_url,
+    //     category: {
+    //       // id: el?.category?.id,
+    //     },
+    //   };
+    // });
     return news;
   }
 
