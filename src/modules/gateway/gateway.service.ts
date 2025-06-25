@@ -35,27 +35,27 @@ export class GatewayService {
     });
   }
 
-  async inceaseView(newsId: number) {
-    const post = await prisma.news.findUnique({
-      where: {
-        id: newsId,
-      },
-    });
+  // async increaseView(newsId: number) {
+  //   const post = await prisma.news.findUnique({
+  //     where: {
+  //       id: newsId,
+  //     },
+  //   });
 
-    if (!post) {
-      throw new NotFoundException('post not found');
-    }
+  //   if (!post) {
+  //     throw new NotFoundException('post not found');
+  //   }
 
-    await prisma.news.update({
-      where: {
-        id: post.id,
-      },
-      data: {
-        views: post.views + 1,
-      },
-    });
-    return 'ok';
-  }
+  //   await prisma.news.update({
+  //     where: {
+  //       id: post.id,
+  //     },
+  //     data: {
+  //       views: post.views + 1,
+  //     },
+  //   });
+  //   return 'ok';
+  // }
 
   sendToMessage(id: string, event: string, data: any) {}
 }

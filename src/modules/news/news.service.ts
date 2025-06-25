@@ -222,4 +222,27 @@ export class NewsService {
       include: { user: { select: { id: true, email: true } } },
     });
   }
+
+  async newView(news_id: number) {
+    const post = await this.prisma.news.findUnique({
+      where: {
+        id: news_id,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+
+    await this.prisma.news.update({
+      where: {
+        id: post.id,
+      },
+      data: {
+        views: post.views + 1,
+      },
+    });
+
+    return 'success';
+  }
 }

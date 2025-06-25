@@ -9,12 +9,12 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { ViewDto } from './dto';
-import { GatewayService } from './gateway.service';
+import { NewsService } from '@modules';
 // import { SaveEveryCashRequest } from '@interfaces';
 
 @WebSocketGateway()
 export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private gatewayService: GatewayService) {}
+  constructor(private newsService: NewsService) {}
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket, ...args: any[]) {
@@ -31,7 +31,8 @@ export class GatewayGateway implements OnGatewayConnection, OnGatewayDisconnect 
 
   @SubscribeMessage('view')
   async action(@MessageBody() body: ViewDto) {
-    return await this.gatewayService.inceaseView(body.news_id);
+    const result = await this.newsService.newView(body.news_id);
+    return result;
   }
 
   // @SubscribeMessage('action')

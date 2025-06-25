@@ -34,7 +34,7 @@ export class NewsController {
     return this.newsService.getCategories(headers.lang);
   }
 
-  @Get(':id')
+  @Get(':slug')
   async findOne(@Param('slug') slug: string) {
     return this.newsService.findOne(slug);
   }

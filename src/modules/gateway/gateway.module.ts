@@ -2,12 +2,11 @@ import { Global, Module } from '@nestjs/common';
 import { GatewayService } from './gateway.service';
 import { GatewayGateway } from './gateway.gateway';
 import { GatewatController } from './gateway.controller';
-import { UserModule } from '../user/user.module';
-import { PrismaModule } from '@prisma';
+import { NewsModule } from '@modules';
 
 @Global()
 @Module({
-  imports: [UserModule, PrismaModule],
+  imports: [NewsModule],
   controllers: [GatewatController],
   providers: [GatewayGateway, GatewayService],
   exports: [GatewayService],
