@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsArray, IsInt } from 'class-validator';
+import { IsOptional, IsString, IsArray, IsInt, IsBoolean } from 'class-validator';
 
 export class UpdateNewsDto {
   @ApiProperty({
@@ -91,6 +91,15 @@ export class UpdateNewsDto {
   @IsOptional()
   @IsString()
   image_url?: string;
+
+  @ApiProperty({
+    description: 'if true will be on top. defoult will be false',
+    type: Boolean,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  is_hot?: boolean;
 
   @ApiProperty({
     description: "Teglar ro'yxati",

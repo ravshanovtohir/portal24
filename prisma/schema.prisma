@@ -47,7 +47,8 @@ model News {
   slug_uz     String?
   slug_ru     String?
   slug_en     String?
-  tags        String[]
+  tags        String[] 
+  is_hot      Boolean? @default(false)
   author_id   Int
   categoty_id Int
   views       Int       @default(0)
