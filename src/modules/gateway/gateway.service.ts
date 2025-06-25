@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { GatewayGateway } from './gateway.gateway';
+import { prisma } from '@helpers';
 
 @Injectable()
 export class GatewayService {
@@ -32,6 +33,28 @@ export class GatewayService {
         },
       );
     });
+  }
+
+  async inceaseView(newsId: number) {
+    const post = await prisma.news.findUnique({
+      where: {
+        id: newsId,
+      },
+    });
+
+    if (!post) {
+      throw new NotFoundException('post not found');
+    }
+
+    await prisma.news.update({
+      where: {
+        id: post.id,
+      },
+      data: {
+        views: post.views + 1,
+      },
+    });
+    return 'ok';
   }
 
   sendToMessage(id: string, event: string, data: any) {}
