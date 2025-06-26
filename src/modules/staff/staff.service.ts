@@ -19,7 +19,7 @@ export class StaffService {
         login: true,
         name: true,
         code: true,
-        createdAt: true,
+        created_at: true,
       },
     });
     return stafs;
@@ -36,7 +36,7 @@ export class StaffService {
         name: true,
         role: true,
         code: true,
-        createdAt: true,
+        created_at: true,
       },
     });
 
@@ -96,7 +96,7 @@ export class StaffService {
         password: true,
         status: true,
         role: true,
-        createdAt: true,
+        created_at: true,
       },
     });
 
