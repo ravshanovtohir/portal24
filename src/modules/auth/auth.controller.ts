@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequestDto } from './dto';
 import { IRequest } from '@interfaces';
@@ -16,6 +16,8 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() request: IRequest) {
+    console.log(request);
+
     return await this.authService.getMe(request.user.id);
   }
 }
