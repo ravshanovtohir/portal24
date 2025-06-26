@@ -15,6 +15,7 @@ import {
   UtilitiesDataModule,
 } from '@modules';
 import { AuthModule } from './auth/auth.module';
+import { StaffModule } from './staff/staff.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,7 @@ import { AuthModule } from './auth/auth.module';
     CategoryModule,
     UtilitiesDataModule,
     AuthModule,
+    StaffModule,
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],

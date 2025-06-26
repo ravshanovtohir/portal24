@@ -147,11 +147,11 @@ model Staff {
   name     String?
   role     StaffRole
   code     String?
-  status   Status
+  status   Status    @default(ACTIVE)
   news     News[]
 
-  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(5)
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(5)
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz(5)
+  updated_at DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(5)
 
   @@map("staff")
 }
