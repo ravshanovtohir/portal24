@@ -6,3 +6,4 @@ export * from './prisma';
 export * from './comment';
 export * from './gateway';
 export * from './category';
+export * from './utilities-data';

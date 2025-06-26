@@ -12,6 +12,7 @@ import {
   NewsModule,
   CategoryModule,
   LidModule,
+  UtilitiesDataModule,
 } from '@modules';
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import {
     GatewayModule,
     NewsModule,
     CategoryModule,
+    UtilitiesDataModule,
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],

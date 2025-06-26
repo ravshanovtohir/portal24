@@ -14,7 +14,7 @@ export class UtilitiesDataController {
 
   @Get()
   findAll() {
-    return this.utilitiesDataService.findAll();
+    return this.utilitiesDataService.getMultiLangWeeklyWeather();
   }
 
   @Get(':id')
