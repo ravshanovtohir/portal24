@@ -32,12 +32,6 @@ export class NewsService {
         },
         image_url: true,
         tags: true,
-        author: {
-          select: {
-            id: true,
-            email: true,
-          },
-        },
         views: true,
         comments: true,
         likes: true,
@@ -82,12 +76,6 @@ export class NewsService {
         summary_en: true,
         category: true,
         tags: true,
-        author: {
-          select: {
-            id: true,
-            email: true,
-          },
-        },
         views: true,
         created_at: true,
       },
@@ -144,10 +132,6 @@ export class NewsService {
         tags: data.tags,
         categoty_id: data?.category_id,
         author_id: authorId,
-      },
-      include: {
-        author: { select: { id: true, email: true } },
-        category: true,
       },
     });
 

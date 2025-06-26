@@ -1,7 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UtilitiesDataService } from './utilities-data.service';
-import { CreateUtilitiesDatumDto } from './dto/create-utilities-datum.dto';
-import { UpdateUtilitiesDatumDto } from './dto/update-utilities-datum.dto';
 import { HeadersValidation } from '@decorators';
 import { DeviceHeadersDto } from '@enums';
 
@@ -17,5 +15,10 @@ export class UtilitiesDataController {
   @Get('currency')
   getValyuta(@HeadersValidation() headers: DeviceHeadersDto) {
     return this.utilitiesDataService.kursValyut(headers.lang);
+  }
+
+  @Post('update-weather')
+  async updateWaetherinfos() {
+    return this.utilitiesDataService.weatheroDb();
   }
 }

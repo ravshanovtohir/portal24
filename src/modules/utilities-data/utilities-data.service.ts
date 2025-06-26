@@ -21,11 +21,7 @@ export class UtilitiesDataService {
         [`weather_${lang}`]: true,
       },
     });
-
-    ['USD', 'EUR', 'RUB', 'GBP', 'JPY', 'CAD', 'CNY', 'KGS', 'KZT', 'AED'];
-    return {
-      name: JSON.parse(weather[`weather_${lang}`]),
-    };
+    return JSON.parse(weather[`weather_${lang}`]);
   }
 
   async kursValyut(lang: string) {
@@ -88,14 +84,15 @@ export class UtilitiesDataService {
       const daily = response.data.daily.slice(0, 7).map((day: any, index: number) => {
         const date = new Date(day.dt * 1000);
         return {
-          dayName: this.getDayName(date, lang),
+          day_name: this.getDayName(date, lang),
           date: date.toISOString().split('T')[0],
-          maxTemp: Math.round(day.temp.max),
-          minTemp: Math.round(day.temp.min),
-          windSpeed: index === 0 ? current.wind_speed : day.wind_speed,
+          day: Math.round(day.temp.day),
+          night: Math.round(day.temp.night),
+          wind_speed: index === 0 ? current.wind_speed : day.wind_speed,
           humidity: index === 0 ? current.humidity : day.humidity,
         };
       });
+
       return daily;
     } catch (error) {
       throw new InternalServerErrorException("Kunlik ma'lumotlar olishda xatolik");

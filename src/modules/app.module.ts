@@ -14,6 +14,7 @@ import {
   LidModule,
   UtilitiesDataModule,
 } from '@modules';
+import { AuthModule } from './auth/auth.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +30,7 @@ import {
     NewsModule,
     CategoryModule,
     UtilitiesDataModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],
