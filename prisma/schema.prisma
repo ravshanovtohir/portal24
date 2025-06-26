@@ -129,7 +129,13 @@ model Lid {
 }
 
 model Weather {
-  id Int @id @default(autoincrement())
+  id         Int   @id @default(autoincrement())
+  weather_uz Json?
+  weather_ru Json?
+  weather_en Json?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
 }
 
 enum Status {

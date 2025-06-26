@@ -2,33 +2,20 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UtilitiesDataService } from './utilities-data.service';
 import { CreateUtilitiesDatumDto } from './dto/create-utilities-datum.dto';
 import { UpdateUtilitiesDatumDto } from './dto/update-utilities-datum.dto';
+import { HeadersValidation } from '@decorators';
+import { DeviceHeadersDto } from '@enums';
 
 @Controller('utilities-data')
 export class UtilitiesDataController {
   constructor(private readonly utilitiesDataService: UtilitiesDataService) {}
 
-  @Post()
-  create(@Body() createUtilitiesDatumDto: CreateUtilitiesDatumDto) {
-    return this.utilitiesDataService.create(createUtilitiesDatumDto);
+  @Get('weather')
+  getWeather(@HeadersValidation() headers: DeviceHeadersDto) {
+    return this.utilitiesDataService.getWeather(headers.lang);
   }
 
-  @Get()
-  findAll() {
-    return this.utilitiesDataService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.utilitiesDataService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUtilitiesDatumDto: UpdateUtilitiesDatumDto) {
-    return this.utilitiesDataService.update(+id, updateUtilitiesDatumDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.utilitiesDataService.remove(+id);
+  @Get('currency')
+  getValyuta() {
+    return this.utilitiesDataService.kursValyut();
   }
 }
