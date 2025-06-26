@@ -1,4 +1,4 @@
-import { ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
 import { paginate } from '@helpers';
@@ -11,14 +11,16 @@ export class NewsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async findAll(query: GetNewsDto, lang: string) {
-    console.log(query);
+    let select = {};
+    let where = {};
+    let orderBy = {};
+    if (query?.type === 'hot') {
+      where = {
+        is_hot: true,
+        status: Status.ACTIVE,
+      };
 
-    const news = await paginate('news', {
-      page: query?.page,
-      size: query?.size,
-      filter: query?.filters,
-      sort: query?.sort,
-      select: {
+      select = {
         id: true,
         [`title_${lang}`]: true,
         [`summary_${lang}`]: true,
@@ -36,7 +38,86 @@ export class NewsService {
         comments: true,
         likes: true,
         created_at: true,
-      },
+      };
+    }
+
+    if (query?.type === 'popular') {
+      where = {
+        status: Status.ACTIVE,
+      };
+      select = {
+        id: true,
+        [`title_${lang}`]: true,
+        [`summary_${lang}`]: true,
+        [`content_${lang}`]: true,
+        status: true,
+        category: {
+          select: {
+            id: true,
+            [`name_${lang}`]: true,
+          },
+        },
+        image_url: true,
+        tags: true,
+        views: true,
+        comments: true,
+        likes: true,
+        created_at: true,
+      };
+
+      orderBy = {
+        views: 'desc',
+      };
+    }
+
+    if (query?.type === 'admin') {
+      where = {
+        id: true,
+        title_uz: true,
+        title_ru: true,
+        title_en: true,
+        summary_uz: true,
+        summary_ru: true,
+        summary_en: true,
+        content_uz: true,
+        content_ru: true,
+        content_en: true,
+        image_url: true,
+        status: true,
+        slug_uz: true,
+        slug_ru: true,
+        slug_en: true,
+        tags: true,
+        is_hot: true,
+        author_id: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            status: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name_uz: true,
+            name_ru: true,
+            name_en: true,
+            status: true,
+          },
+        },
+      };
+    } else {
+      throw new BadRequestException('Неверный тип для новостей!');
+    }
+
+    const news = await paginate('news', {
+      page: query?.page,
+      size: query?.size,
+      filter: query?.filters,
+      sort: query?.sort,
+      select: select,
+      where: where,
     });
 
     // return news?.data?.map((el) => {

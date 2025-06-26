@@ -44,4 +44,8 @@ export class GetNewsDto extends PaginationOptionalDto {
   @Type(() => NewsSort)
   @ApiProperty({ type: NewsSort })
   sort?: NewsSort;
+
+  @IsString()
+  @IsOptional()
+  type?: string;
 }
