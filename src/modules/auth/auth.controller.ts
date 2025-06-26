@@ -16,8 +16,6 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() request: IRequest) {
-    console.log(request);
-
     return await this.authService.getMe(request.user.id);
   }
 }
