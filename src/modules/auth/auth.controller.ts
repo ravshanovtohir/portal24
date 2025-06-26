@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginRequestDto } from './dto';
 import { IRequest } from '@interfaces';
+import { JwtAuthGuard } from '@guards';
 
 @Controller('auth')
 export class AuthController {
@@ -12,7 +13,7 @@ export class AuthController {
     return await this.authService.login(data);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async getMe(@Req() request: IRequest) {
     return await this.authService.getMe(request.user.id);
