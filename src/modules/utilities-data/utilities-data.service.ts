@@ -28,9 +28,10 @@ export class UtilitiesDataService {
     };
   }
 
-  async kursValyut() {
+  async kursValyut(lang: string) {
     try {
       const currecyCodes = ['USD', 'EUR', 'RUB', 'GBP', 'JPY', 'CAD', 'CNY', 'KGS', 'KZT', 'AED'];
+      lang = lang.toUpperCase();
 
       let date = new Date();
       date.toISOString().split('T')[0];
@@ -40,10 +41,18 @@ export class UtilitiesDataService {
       const result = [];
       response.data.filter((el: any) => {
         if (currecyCodes.includes(el.Ccy)) {
-          result.push(el);
+          result.push({
+            id: el?.id,
+            code: el?.Code,
+            ccy: el?.Ccy,
+            cyyname: el[`CcyNm_${lang}`],
+            nominal: el?.Nominal,
+            rate: el?.Rate,
+            diff: el?.Diff,
+            date: el?.Date,
+          });
         }
       });
-
       return result;
     } catch (error) {
       throw new InternalServerErrorException("Kunlik ma'lumotlar olishda xatolik");

@@ -15,7 +15,7 @@ export class UtilitiesDataController {
   }
 
   @Get('currency')
-  getValyuta() {
-    return this.utilitiesDataService.kursValyut();
+  getValyuta(@HeadersValidation() headers: DeviceHeadersDto) {
+    return this.utilitiesDataService.kursValyut(headers.lang);
   }
 }
