@@ -5,11 +5,11 @@ import { IsArray, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'cla
 import { OperatorTypes, PaginationOptionalDto } from '@enums';
 import { prisma } from '@helpers';
 
-const depositFields = Object.keys(prisma.news.fields);
+const categoryFields = Object.keys(prisma.staff.fields);
 
 class NewsFilter {
-  @IsIn(depositFields)
-  @ApiProperty({ enum: depositFields })
+  @IsIn(categoryFields)
+  @ApiProperty({ enum: categoryFields })
   column: string;
 
   @IsEnum(OperatorTypes)
@@ -22,8 +22,8 @@ class NewsFilter {
 }
 
 class NewsSort {
-  @ApiProperty({ enum: depositFields })
-  @IsIn(depositFields)
+  @ApiProperty({ enum: categoryFields })
+  @IsIn(categoryFields)
   column: string;
 
   @IsEnum(Prisma.SortOrder)
@@ -36,15 +36,16 @@ export class GetNewsDto extends PaginationOptionalDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => NewsFilter)
-  @ApiProperty({ type: NewsFilter, isArray: true })
+  @ApiProperty({ type: NewsFilter, isArray: true, required: false })
   filters?: NewsFilter[];
 
   @IsOptional()
   @ValidateNested()
   @Type(() => NewsSort)
-  @ApiProperty({ type: NewsSort })
+  @ApiProperty({ type: NewsSort, required: false })
   sort?: NewsSort;
 
+  @ApiProperty({ type: String, required: false, description: 'admin | popular | hot' })
   @IsString()
   @IsOptional()
   type?: string;

@@ -39,9 +39,7 @@ export class NewsService {
         likes: true,
         created_at: true,
       };
-    }
-
-    if (query?.type === 'popular') {
+    } else if (query?.type === 'popular') {
       where = {
         status: Status.ACTIVE,
       };
@@ -68,10 +66,8 @@ export class NewsService {
       orderBy = {
         views: 'desc',
       };
-    }
-
-    if (query?.type === 'admin') {
-      where = {
+    } else if (query?.type === 'admin') {
+      select = {
         id: true,
         title_uz: true,
         title_ru: true,
@@ -206,7 +202,7 @@ export class NewsService {
         content_uz: data.content_uz,
         content_ru: data.content_ru,
         content_en: data.content_en,
-        image_url: file.filename,
+        image_url: file?.filename,
         slug_uz: slugify(data.title_uz, { lower: true, strict: true }),
         slug_ru: slugify(data.title_ru, { lower: true, strict: true }),
         slug_en: slugify(data.title_en, { lower: true, strict: true }),
