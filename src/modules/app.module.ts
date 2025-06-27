@@ -16,11 +16,18 @@ import {
 } from '@modules';
 import { AuthModule } from './auth/auth.module';
 import { StaffModule } from './staff/staff.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       validate,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: '/uploads',
     }),
     LidModule,
     UserModule,
@@ -33,6 +40,7 @@ import { StaffModule } from './staff/staff.module';
     UtilitiesDataModule,
     AuthModule,
     StaffModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],
