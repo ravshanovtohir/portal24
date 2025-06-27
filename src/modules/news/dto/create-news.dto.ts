@@ -93,6 +93,11 @@ export class CreateNewsDto {
   @IsString()
   content_en: string;
 
+  @ApiProperty({ required: true, type: Number })
+  @IsNotEmpty()
+  @IsString()
+  image_url: string;
+
   @ApiProperty({
     description: 'if true will be on top. defoult will be false',
     type: Boolean,

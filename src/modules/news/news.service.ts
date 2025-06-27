@@ -180,7 +180,7 @@ export class NewsService {
     });
   }
 
-  async create(data: CreateNewsDto, authorId: number = 1, file: Express.Multer.File) {
+  async create(data: CreateNewsDto, authorId: number) {
     const category = await this.prisma.category.findUnique({
       where: {
         id: data.category_id,
@@ -202,7 +202,7 @@ export class NewsService {
         content_uz: data.content_uz,
         content_ru: data.content_ru,
         content_en: data.content_en,
-        image_url: file?.filename,
+        image_url: data.image_url,
         slug_uz: slugify(data.title_uz, { lower: true, strict: true }),
         slug_ru: slugify(data.title_ru, { lower: true, strict: true }),
         slug_en: slugify(data.title_en, { lower: true, strict: true }),
@@ -217,7 +217,13 @@ export class NewsService {
 
   async saveMedia(file: Express.Multer.File) {
     return {
-      file: file.filename,
+      file: file.path,
+    };
+  }
+
+  async uploadBanner(file: Express.Multer.File) {
+    return {
+      file: file.path,
     };
   }
 

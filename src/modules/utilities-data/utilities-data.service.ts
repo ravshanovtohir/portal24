@@ -130,23 +130,23 @@ export class UtilitiesDataService {
     });
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS)
-  async updateWeather() {
-    // this.logger.log('Weather Updated!');
-    console.log('Weather Updated!');
-    const weather = await this.prisma.weather.findFirst();
-    const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
+  // @Cron(CronExpression.EVERY_10_SECONDS)
+  // async updateWeather() {
+  //   // this.logger.log('Weather Updated!');
+  //   console.log('Weather Updated!');
+  //   const weather = await this.prisma.weather.findFirst();
+  //   const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
 
-    await this.prisma.weather.update({
-      where: {
-        id: weather.id,
-      },
-      data: {
-        weather_uz: JSON.stringify(weatherInfo.uz),
-        weather_ru: JSON.stringify(weatherInfo.ru),
-        weather_en: JSON.stringify(weatherInfo.en),
-        updated_at: new Date(),
-      },
-    });
-  }
+  //   await this.prisma.weather.update({
+  //     where: {
+  //       id: weather.id,
+  //     },
+  //     data: {
+  //       weather_uz: JSON.stringify(weatherInfo.uz),
+  //       weather_ru: JSON.stringify(weatherInfo.ru),
+  //       weather_en: JSON.stringify(weatherInfo.en),
+  //       updated_at: new Date(),
+  //     },
+  //   });
+  // }
 }

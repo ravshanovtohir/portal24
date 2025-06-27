@@ -26,9 +26,13 @@ import { join } from 'path';
       validate,
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
+      serveStaticOptions: {
+        index: false, // index.html qidirilmasin
+      },
     }),
+
     LidModule,
     UserModule,
     PostModule,
