@@ -42,7 +42,7 @@ export class NewsController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './uploads/insurance_partner_logo',
+        destination: './uploads/banner',
         filename: (_, file, cb) => {
           const uuid = uuidv4();
           const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
@@ -50,7 +50,7 @@ export class NewsController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|WebP|AVIF)$/)) {
           return cb(new BadRequestException('Неверный тип файла!'), false);
         }
         cb(null, true);
@@ -65,7 +65,7 @@ export class NewsController {
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './uploads/insurance_partner_logo',
+        destination: './uploads/imagesc',
         filename: (_, file, cb) => {
           const uuid = uuidv4();
           const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
@@ -73,7 +73,7 @@ export class NewsController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV|WebP|AVIF)$/)) {
           return cb(new BadRequestException('Неверный тип файла!'), false);
         }
         cb(null, true);

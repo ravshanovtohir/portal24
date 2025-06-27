@@ -16,6 +16,7 @@ import {
 } from '@modules';
 import { AuthModule } from './auth/auth.module';
 import { StaffModule } from './staff/staff.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { StaffModule } from './staff/staff.module';
     UtilitiesDataModule,
     AuthModule,
     StaffModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],

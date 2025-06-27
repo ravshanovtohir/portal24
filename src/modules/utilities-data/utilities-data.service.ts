@@ -1,22 +1,26 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { CreateUtilitiesDatumDto } from './dto/create-utilities-datum.dto';
-import { UpdateUtilitiesDatumDto } from './dto/update-utilities-datum.dto';
 import { HttpService } from '@nestjs/axios';
 import { WEATHER_API_KEY } from '@config';
 import { firstValueFrom } from 'rxjs';
-import { prisma } from '@helpers';
-import { DailyWeatherDto, MultiLangDailyWeatherDto } from '@interfaces';
+import { MultiLangDailyWeatherDto } from '@interfaces';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { WinstonLoggerService } from '@logger';
+import { PrismaService } from '@prisma';
 @Injectable()
 export class UtilitiesDataService {
   private readonly apiKey: string;
   private readonly baseUrl: string = 'https://api.openweathermap.org/data/2.5/weather';
   private readonly oneCallUrl: string = 'https://api.openweathermap.org/data/3.0/onecall';
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService,
+    private readonly logger: WinstonLoggerService,
+    private readonly prisma: PrismaService,
+  ) {
     this.apiKey = WEATHER_API_KEY;
   }
 
   async getWeather(lang: 'uz' | 'ru' | 'en') {
-    const weather = await prisma.weather.findFirst({
+    const weather = await this.prisma.weather.findFirst({
       select: {
         [`weather_${lang}`]: true,
       },
@@ -106,6 +110,8 @@ export class UtilitiesDataService {
         this.getDailyWeatherByLang(city, 'en'),
         this.getDailyWeatherByLang(city, 'ru'),
       ]);
+      console.log({ uz, en, ru });
+
       return { uz, en, ru };
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
@@ -115,11 +121,31 @@ export class UtilitiesDataService {
 
   async weatheroDb() {
     const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
-    await prisma.weather.create({
+    await this.prisma.weather.create({
       data: {
         weather_uz: JSON.stringify(weatherInfo.uz),
         weather_ru: JSON.stringify(weatherInfo.ru),
         weather_en: JSON.stringify(weatherInfo.en),
+      },
+    });
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  async updateWeather() {
+    // this.logger.log('Weather Updated!');
+    console.log('Weather Updated!');
+    const weather = await this.prisma.weather.findFirst();
+    const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
+
+    await this.prisma.weather.update({
+      where: {
+        id: weather.id,
+      },
+      data: {
+        weather_uz: JSON.stringify(weatherInfo.uz),
+        weather_ru: JSON.stringify(weatherInfo.ru),
+        weather_en: JSON.stringify(weatherInfo.en),
+        updated_at: new Date(),
       },
     });
   }
