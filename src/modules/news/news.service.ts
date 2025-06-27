@@ -215,6 +215,12 @@ export class NewsService {
     return 'Пост успешно создан!';
   }
 
+  async saveMedia(file: Express.Multer.File) {
+    return {
+      file: file.filename,
+    };
+  }
+
   async update(id: number, data: UpdateNewsDto) {
     const news = await this.prisma.news.findUnique({
       where: {

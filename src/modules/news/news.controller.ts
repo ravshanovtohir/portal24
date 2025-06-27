@@ -62,6 +62,29 @@ export class NewsController {
     return this.newsService.create(data, request?.id, file);
   }
 
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/insurance_partner_logo',
+        filename: (_, file, cb) => {
+          const uuid = uuidv4();
+          const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
+          cb(null, filename);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV)$/)) {
+          return cb(new BadRequestException('Неверный тип файла!'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  @Post()
+  async saveMedia(@UploadedFile() file: Express.Multer.File) {
+    return this.newsService.saveMedia(file);
+  }
+
   @Patch('id')
   async update(@Param() param: ParamId, @Body() data: UpdateNewsDto) {
     return this.newsService.update(param.id, data);
