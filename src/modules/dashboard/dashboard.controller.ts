@@ -10,4 +10,9 @@ export class DashboardController {
   async findAllNews(@Query() query: GetNewsDto) {
     return this.dashboardService.findAllNews(query);
   }
+
+  @Get('category')
+  async findCategory() {
+    return this.dashboardService.findCategory();
+  }
 }

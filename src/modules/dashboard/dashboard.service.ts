@@ -57,15 +57,14 @@ export class DashboardService {
     return news;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} dashboard`;
-  }
-
-  update(id: number, updateDashboardDto: UpdateDashboardDto) {
-    return `This action updates a #${id} dashboard`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} dashboard`;
+  async findCategory() {
+    const categories = await this.prisma.$queryRaw`
+    SELECT 
+      CAST(COUNT(*) AS INTEGER) as "total",
+      CAST(SUM(CASE WHEN status = 'ACTIVE' THEN 1 ELSE 0 END) AS INTEGER) as "active_categories",
+      CAST(SUM(CASE WHEN status = 'INACTIVE' THEN 1 ELSE 0 END) AS INTEGER) as "inactive_categories"
+    FROM "category"
+  `;
+    return categories[0] ?? {};
   }
 }

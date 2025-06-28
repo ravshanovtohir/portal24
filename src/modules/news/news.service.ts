@@ -53,9 +53,6 @@ export class NewsService {
           select: {
             id: true,
             [`name_${lang}`]: true,
-            [`title_${lang}`]: true,
-            [`seo_title_${lang}`]: true,
-            [`description_${lang}`]: true,
           },
         },
         image_url: true,
@@ -90,10 +87,8 @@ export class NewsService {
         status: el?.status,
         image: el?.image_url,
         category: {
+          id: el?.category?.id,
           name: el?.category[`name_${lang}`],
-          title: el?.category[`title_${lang}`],
-          seo_description: el?.category[`description_${lang}`],
-          seo_title: el?.category[`seo_title_${lang}`],
         },
         likes: el?.likes?.length,
         comments: el?.likes?.length,
