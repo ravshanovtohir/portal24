@@ -110,8 +110,6 @@ export class UtilitiesDataService {
         this.getDailyWeatherByLang(city, 'en'),
         this.getDailyWeatherByLang(city, 'ru'),
       ]);
-      console.log({ uz, en, ru });
-
       return { uz, en, ru };
     } catch (error) {
       if (error instanceof BadRequestException) throw error;
@@ -130,23 +128,38 @@ export class UtilitiesDataService {
     });
   }
 
-  // @Cron(CronExpression.EVERY_10_SECONDS)
-  // async updateWeather() {
-  //   // this.logger.log('Weather Updated!');
-  //   console.log('Weather Updated!');
-  //   const weather = await this.prisma.weather.findFirst();
-  //   const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
+  @Cron(CronExpression.EVERY_4_HOURS)
+  async updateWeather() {
+    this.logger.log('Weather Updated!');
+    const weather = await this.prisma.weather.findFirst();
+    const weatherInfo = await this.getMultiLangDailyWeather('Uzbekistan');
 
-  //   await this.prisma.weather.update({
-  //     where: {
-  //       id: weather.id,
-  //     },
-  //     data: {
-  //       weather_uz: JSON.stringify(weatherInfo.uz),
-  //       weather_ru: JSON.stringify(weatherInfo.ru),
-  //       weather_en: JSON.stringify(weatherInfo.en),
-  //       updated_at: new Date(),
-  //     },
-  //   });
-  // }
+    if (!weatherInfo) {
+      console.log('error getting weather infos');
+      process.exit(1);
+    }
+
+    if (weather) {
+      await this.prisma.weather.update({
+        where: {
+          id: weather.id,
+        },
+        data: {
+          weather_uz: JSON.stringify(weatherInfo.uz),
+          weather_ru: JSON.stringify(weatherInfo.ru),
+          weather_en: JSON.stringify(weatherInfo.en),
+          updated_at: new Date(),
+        },
+      });
+    } else {
+      await this.prisma.weather.create({
+        data: {
+          weather_uz: JSON.stringify(weatherInfo.uz),
+          weather_ru: JSON.stringify(weatherInfo.ru),
+          weather_en: JSON.stringify(weatherInfo.en),
+          updated_at: new Date(),
+        },
+      });
+    }
+  }
 }

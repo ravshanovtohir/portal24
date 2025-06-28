@@ -9,7 +9,7 @@ enum Lang {
 }
 
 export class DeviceHeadersDto {
-  // @IsEnum(Lang)
+  @IsEnum(Lang)
   'lang': Lang;
 }
 

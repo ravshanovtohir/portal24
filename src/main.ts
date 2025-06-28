@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { BadRequestException, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
 import { APP_PORT } from './config';
@@ -33,6 +33,11 @@ async function bootstrap() {
         whitelist: true,
         transformOptions: {
           enableImplicitConversion: true,
+        },
+        exceptionFactory: (errors) => {
+          const firstError = errors.find((error) => error.constraints);
+          const message = firstError ? Object.values(firstError.constraints!)[0] : 'Validation error';
+          return new BadRequestException(message);
         },
       }),
     ));

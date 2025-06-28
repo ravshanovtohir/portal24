@@ -35,8 +35,8 @@ export class NewsController {
   }
 
   @Get(':slug')
-  async findOne(@Param('slug') slug: string) {
-    return this.newsService.findOne(slug);
+  async findOne(@Param('slug') slug: string, @HeadersValidation() headers: DeviceHeadersDto) {
+    return this.newsService.findOne(slug, headers.lang);
   }
 
   @Post()

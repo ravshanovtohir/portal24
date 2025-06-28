@@ -50,12 +50,12 @@ model News {
   tags        String[]
   is_hot      Boolean?  @default(false)
   author_id   Int
-  categoty_id Int
+  category_id Int
   views       Int       @default(0)
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
   author      Staff     @relation(fields: [author_id], references: [id])
-  category    Category  @relation(fields: [categoty_id], references: [id])
+  category    Category  @relation(fields: [category_id], references: [id])
   likes       Like[]
   comments    Comment[]
   staffId     Int?
@@ -107,14 +107,24 @@ model User {
 }
 
 model Category {
-  id         Int       @id @default(autoincrement())
-  name_uz    String?
-  name_ru    String?
-  name_en    String
-  status     Status    @default(ACTIVE)
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  news       News[]
+  id                 Int       @id @default(autoincrement())
+  name_uz            String?
+  name_ru            String?
+  name_en            String?
+  title_uz           String?
+  title_ru           String?
+  title_en           String?
+  seo_title_uz       String?
+  seo_title_ru       String?
+  seo_title_en       String?
+  seo_description_uz String?
+  seo_description_ru String?
+  seo_description_en String?
+  order_number       Int?
+  status             Status    @default(ACTIVE)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime? @updatedAt
+  news               News[]
 
   @@map("category")
 }

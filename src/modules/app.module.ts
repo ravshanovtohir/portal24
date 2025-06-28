@@ -19,6 +19,7 @@ import { StaffModule } from './staff/staff.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { DashboardModule } from './dashboard/dashboard.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -45,6 +46,7 @@ import { join } from 'path';
     AuthModule,
     StaffModule,
     ScheduleModule.forRoot(),
+    DashboardModule,
   ],
   controllers: [],
   providers: [WinstonLoggerService, LoggingInterceptor],
