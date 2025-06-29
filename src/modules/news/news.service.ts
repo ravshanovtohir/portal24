@@ -213,6 +213,7 @@ export class NewsService {
         tags: data.tags,
         category_id: data?.category_id,
         author_id: authorId,
+        is_hot: data?.is_hot,
       },
     });
 
