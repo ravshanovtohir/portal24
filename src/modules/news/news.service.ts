@@ -18,6 +18,9 @@ export class NewsService {
       where = {
         is_hot: true,
         status: Status.ACTIVE,
+        category: {
+          status: Status.ACTIVE,
+        },
       };
 
       select = {
@@ -42,6 +45,9 @@ export class NewsService {
     } else if (query?.type === 'popular') {
       where = {
         status: Status.ACTIVE,
+        category: {
+          status: Status.ACTIVE,
+        },
       };
       select = {
         id: true,
@@ -161,7 +167,7 @@ export class NewsService {
         [`name_${lang}`]: true,
         [`title_${lang}`]: true,
         [`seo_title_${lang}`]: true,
-        [`description_${lang}`]: true,
+        [`seo_description_${lang}`]: true,
       },
     });
 

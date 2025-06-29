@@ -116,15 +116,15 @@ export class CategoryService {
       throw new ConflictException('Категория с таким названием существует!');
     }
 
-    const orderNumber = await this.prisma.category.findFirst({
-      where: {
-        order_number: data.order_number,
-      },
-    });
+    // const orderNumber = await this.prisma.category.findFirst({
+    //   where: {
+    //     order_number: data.order_number,
+    //   },
+    // });
 
-    if (orderNumber) {
-      throw new ConflictException('Категория с данным номером уже существует!');
-    }
+    // if (orderNumber) {
+    //   throw new ConflictException('Категория с данным номером уже существует!');
+    // }
 
     await this.prisma.category.create({
       data: {
@@ -159,17 +159,17 @@ export class CategoryService {
       throw new NotFoundException('Категория с указанным идентификатором не найдена!');
     }
 
-    if (data.order_number) {
-      const orderNumber = await this.prisma.category.findFirst({
-        where: {
-          order_number: data.order_number,
-        },
-      });
+    // if (data.order_number) {
+    //   const orderNumber = await this.prisma.category.findFirst({
+    //     where: {
+    //       order_number: data.order_number,
+    //     },
+    //   });
 
-      if (orderNumber) {
-        throw new ConflictException('Категория с данным номером уже существует!');
-      }
-    }
+    //   if (orderNumber) {
+    //     throw new ConflictException('Категория с данным номером уже существует!');
+    //   }
+    // }
 
     await this.prisma.category.update({
       where: {
