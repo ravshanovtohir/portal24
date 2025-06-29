@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestj
 import { DashboardService } from './dashboard.service';
 import { CreateDashboardDto, UpdateDashboardDto, GetNewsDto } from './dto';
 import { HeadersValidation } from '@decorators';
-import { DeviceHeadersDto } from '@enums';
+import { DeviceHeadersDto, ParamId } from '@enums';
 
 @Controller('dashboard')
 export class DashboardController {
@@ -11,6 +11,11 @@ export class DashboardController {
   @Get('news')
   async findAllNews(@Query() query: GetNewsDto, @HeadersValidation() headers: DeviceHeadersDto) {
     return this.dashboardService.findAllNews(query, headers.lang);
+  }
+
+  @Get('news/:id')
+  async getNewsById(@Param() param: ParamId) {
+    return this.dashboardService.getNewsById(param.id);
   }
 
   @Get('category')
