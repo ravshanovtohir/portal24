@@ -72,7 +72,35 @@ export class NewsService {
         views: 'desc',
       };
     } else {
-      throw new BadRequestException('Неверный тип для новостей!');
+      where = {
+        status: Status.ACTIVE,
+        category: {
+          status: Status.ACTIVE,
+        },
+      };
+      select = {
+        id: true,
+        [`title_${lang}`]: true,
+        [`summary_${lang}`]: true,
+        [`content_${lang}`]: true,
+        status: true,
+        category: {
+          select: {
+            id: true,
+            [`name_${lang}`]: true,
+          },
+        },
+        image_url: true,
+        tags: true,
+        views: true,
+        comments: true,
+        likes: true,
+        created_at: true,
+      };
+      orderBy = {
+        created_at: 'desc',
+      };
+      // throw new BadRequestException('Неверный тип для новостей!');
     }
 
     const news = await paginate('news', {
