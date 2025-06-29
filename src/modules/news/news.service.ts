@@ -91,12 +91,13 @@ export class NewsService {
         summary: el?.[`summary_${lang}`],
         content: el?.[`content_${lang}`],
         status: el?.status,
-        image: el?.image_url,
+        image_url: el?.image_url,
         category: {
           id: el?.category?.id,
           name: el?.category[`name_${lang}`],
         },
         likes: el?.likes?.length,
+        views: el?.views,
         comments: el?.likes?.length,
         created_at: el?.created_at,
       };
@@ -152,6 +153,7 @@ export class NewsService {
         seo_title: post?.category[`seo_title_${lang}`],
       },
       likes: post?.likes?.length,
+      views: post?.views,
       comments: post?.likes?.length,
       created_at: post?.created_at,
     };

@@ -9,7 +9,7 @@ import { GetNewsDto } from './dto';
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllNews(query: GetNewsDto) {
+  async findAllNews(query: GetNewsDto, lang: string) {
     const news = await paginate('news', {
       page: query?.page,
       size: query?.size,
@@ -17,20 +17,12 @@ export class DashboardService {
       sort: query?.sort,
       select: {
         id: true,
-        title_uz: true,
-        title_ru: true,
-        title_en: true,
-        summary_uz: true,
-        summary_ru: true,
-        summary_en: true,
-        content_uz: true,
-        content_ru: true,
-        content_en: true,
+        [`title_${lang}`]: true,
+        [`summary_${lang}`]: true,
+        [`content_${lang}`]: true,
+        [`slug_${lang}`]: true,
         image_url: true,
         status: true,
-        slug_uz: true,
-        slug_ru: true,
-        slug_en: true,
         tags: true,
         is_hot: true,
         author_id: true,
@@ -41,9 +33,7 @@ export class DashboardService {
         category: {
           select: {
             id: true,
-            name_uz: true,
-            name_ru: true,
-            name_en: true,
+            [`name_${lang}`]: true,
             created_at: true,
           },
         },
@@ -53,8 +43,26 @@ export class DashboardService {
         userId: true,
       },
     });
-
-    return news;
+    return news?.data?.map((el: any) => {
+      return {
+        id: el?.id,
+        title: el?.[`title_${lang}`],
+        summary: el?.[`summary_${lang}`],
+        content: el?.[`content_${lang}`],
+        status: el?.status,
+        image_url: el?.image_url,
+        category: {
+          id: el?.category?.id,
+          name: el?.category[`name_${lang}`],
+        },
+        likes: el?.likes?.length,
+        views: el?.views,
+        comments: el?.comments?.length,
+        tags: el?.tags,
+        created_at: el?.created_at,
+        updated_at: el?.updated_at,
+      };
+    });
   }
 
   async findCategory() {
