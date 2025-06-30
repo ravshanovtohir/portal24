@@ -62,6 +62,7 @@ export class DashboardService {
           name: el?.category[`name_${lang}`],
         },
         likes: el?.likes?.length,
+        is_hot: el?.is_hot,
         views: el?.views,
         comments: el?.comments?.length,
         author: el?.author,
