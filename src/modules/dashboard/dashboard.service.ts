@@ -48,7 +48,8 @@ export class DashboardService {
         userId: true,
       },
     });
-    return news?.data?.map((el: any) => {
+
+    const data = news?.data?.map((el: any) => {
       return {
         id: el?.id,
         title: el?.[`title_${lang}`],
@@ -69,6 +70,11 @@ export class DashboardService {
         updated_at: el?.updated_at,
       };
     });
+
+    return {
+      ...news,
+      data,
+    };
   }
 
   async getNewsById(id: number) {

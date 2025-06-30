@@ -108,6 +108,14 @@ export class CreateNewsDto {
   is_hot?: boolean;
 
   @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @ApiProperty({
     description: 'list of tags for the news',
     example: ['metro', 'tashkent', 'infrastructure'],
     type: [String],

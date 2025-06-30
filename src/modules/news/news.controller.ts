@@ -90,7 +90,7 @@ export class NewsController {
     return this.newsService.uploadBanner(file);
   }
 
-  @Patch('id')
+  @Patch(':id')
   async update(@Param() param: ParamId, @Body() data: UpdateNewsDto) {
     return this.newsService.update(param.id, data);
   }

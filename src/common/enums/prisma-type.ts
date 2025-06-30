@@ -69,7 +69,7 @@ export class PaginationResponse<T> {
 }
 
 export class ParamId {
-  @ApiProperty({ type: String, required: false })
+  @ApiProperty({ type: Number, required: false })
   @Type(() => Number)
   @IsNumber()
   @IsOptional()

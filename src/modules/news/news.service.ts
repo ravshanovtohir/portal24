@@ -112,7 +112,7 @@ export class NewsService {
       where: where,
     });
 
-    return news?.data?.map((el: any) => {
+    const data = news?.data?.map((el: any) => {
       return {
         id: el?.id,
         title: el?.[`title_${lang}`],
@@ -130,6 +130,30 @@ export class NewsService {
         created_at: el?.created_at,
       };
     });
+
+    return {
+      data,
+      ...news,
+    };
+
+    // return news?.data?.map((el: any) => {
+    //   return {
+    //     id: el?.id,
+    //     title: el?.[`title_${lang}`],
+    //     summary: el?.[`summary_${lang}`],
+    //     content: el?.[`content_${lang}`],
+    //     status: el?.status,
+    //     image_url: el?.image_url,
+    //     category: {
+    //       id: el?.category?.id,
+    //       name: el?.category[`name_${lang}`],
+    //     },
+    //     likes: el?.likes?.length,
+    //     views: el?.views,
+    //     comments: el?.likes?.length,
+    //     created_at: el?.created_at,
+    //   };
+    // });
   }
 
   async findOne(slug: string, lang: string) {
@@ -270,22 +294,24 @@ export class NewsService {
     if (!news) {
       throw new NotFoundException('Пост с указанным идентификатором не найден!');
     }
-    // if (updateNewsDto.slug) {
+    // if (news.slug) {
     //   const existingSlug = await this.prisma.news.findUnique({
-    //     where: { slug: updateNewsDto.slug },
+    //     where: { slug: news.slug },
     //   });
     //   if (existingSlug && existingSlug.id !== id) {
     //     throw new ConflictException('Bu slug allaqachon ishlatilgan');
     //   }
     // }
-    return this.prisma.news.update({
+    await this.prisma.news.update({
       where: { id },
       data: {
         ...data,
+        status: (data.status as Status) ?? news.status,
         // ca: data.category_id ? { connect: { id: data.category_id } } : undefined,
       },
-      include: { author: true, category: true },
     });
+
+    return 'Пост успешно обновлен!';
   }
 
   async remove(id: number) {
