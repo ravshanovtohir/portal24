@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { LidService } from './lid.service';
-import { LidController } from './lid.controller';
+import { LeadService } from './lead.service';
+import { LidController } from './lead.controller';
 import { PrismaModule } from '@prisma';
 
 @Module({
   imports: [PrismaModule],
   controllers: [LidController],
-  providers: [LidService],
+  providers: [LeadService],
 })
-export class LidModule {}
+export class LeadModule {}

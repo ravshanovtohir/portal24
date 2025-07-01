@@ -102,6 +102,15 @@ export class UpdateNewsDto {
   is_hot?: boolean;
 
   @ApiProperty({
+    description: 'type of post video, picture or article',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  type?: string;
+
+  @ApiProperty({
     type: String,
     required: false,
   })

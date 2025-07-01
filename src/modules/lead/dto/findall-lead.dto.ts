@@ -5,7 +5,7 @@ import { IsArray, IsEnum, IsIn, IsOptional, IsString, ValidateNested } from 'cla
 import { OperatorTypes, PaginationOptionalDto } from '@enums';
 import { prisma } from '@helpers';
 
-const categoryFields = Object.keys(prisma.lid.fields);
+const categoryFields = Object.keys(prisma.lead.fields);
 
 class LidFilter {
   @IsIn(categoryFields)
@@ -31,7 +31,7 @@ class LidSort {
   value: Prisma.SortOrder;
 }
 
-export class GetLidDto extends PaginationOptionalDto {
+export class GetLeadDto extends PaginationOptionalDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

@@ -11,7 +11,7 @@ import {
   GatewayModule,
   NewsModule,
   CategoryModule,
-  LidModule,
+  LeadModule,
   UtilitiesDataModule,
 } from '@modules';
 import { AuthModule } from './auth/auth.module';
@@ -34,7 +34,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
       },
     }),
 
-    LidModule,
+    LeadModule,
     UserModule,
     PostModule,
     // CommentModule,
