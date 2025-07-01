@@ -55,7 +55,7 @@ export class NewsController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV|WebP|AVIF)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV|WebP|AVIF|avif)$/)) {
           return cb(new BadRequestException('Неверный тип файла!'), false);
         }
         cb(null, true);
@@ -78,7 +78,7 @@ export class NewsController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|WebP|AVIF)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|WebP|AVIF|avif)$/)) {
           return cb(new BadRequestException('Неверный тип файла!'), false);
         }
         cb(null, true);

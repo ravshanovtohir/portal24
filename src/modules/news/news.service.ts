@@ -12,8 +12,12 @@ export class NewsService {
 
   async findAll(query: GetNewsDto, lang: string) {
     let select = {};
-    let where = {};
+    let where: any = {};
     let orderBy = {};
+
+    if (query?.post_type) {
+      where.type = query.post_type;
+    }
     if (query?.type === 'hot') {
       where = {
         is_hot: true,
