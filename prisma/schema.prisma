@@ -47,17 +47,19 @@ model News {
   slug_uz     String?
   slug_ru     String?
   slug_en     String?
-  tags        String[] 
-  is_hot      Boolean? @default(false)
+  tags        String[]
+  is_hot      Boolean?  @default(false)
   author_id   Int
-  categoty_id Int
+  category_id Int
   views       Int       @default(0)
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
-  author      User      @relation(fields: [author_id], references: [id])
-  category    Category  @relation(fields: [categoty_id], references: [id])
+  author      Staff     @relation(fields: [author_id], references: [id])
+  category    Category  @relation(fields: [category_id], references: [id])
   likes       Like[]
   comments    Comment[]
+  staffId     Int?
+  userId      Int?
 
   @@index([title_uz])
   @@index([title_ru])
@@ -97,7 +99,7 @@ model User {
   password String    @db.VarChar(255)
   role     String    @default("user") @db.VarChar(50)
   posts    Post[]
-  news     News[]
+  // news     News[]
   Like     Like[]
   Comment  Comment[]
 
@@ -105,14 +107,24 @@ model User {
 }
 
 model Category {
-  id         Int       @id @default(autoincrement())
-  name_uz    String?
-  name_ru    String?
-  name_en    String
-  status     Status    @default(ACTIVE)
-  created_at DateTime  @default(now())
-  updated_at DateTime? @updatedAt
-  news       News[]
+  id                 Int       @id @default(autoincrement())
+  name_uz            String?
+  name_ru            String?
+  name_en            String?
+  title_uz           String?
+  title_ru           String?
+  title_en           String?
+  seo_title_uz       String?
+  seo_title_ru       String?
+  seo_title_en       String?
+  seo_description_uz String?
+  seo_description_ru String?
+  seo_description_en String?
+  order_number       Int?
+  status             Status    @default(ACTIVE)
+  created_at         DateTime  @default(now())
+  updated_at         DateTime? @updatedAt
+  news               News[]
 
   @@map("category")
 }
@@ -126,6 +138,39 @@ model Lid {
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+}
+
+model Weather {
+  id         Int   @id @default(autoincrement())
+  weather_uz Json?
+  weather_ru Json?
+  weather_en Json?
+
+  created_at DateTime  @default(now())
+  updated_at DateTime? @updatedAt
+
+  @@map("weather")
+}
+
+model Staff {
+  id       Int       @id @default(autoincrement())
+  login    String?
+  password String?
+  name     String?
+  role     StaffRole
+  code     String?
+  status   Status    @default(ACTIVE)
+  news     News[]
+
+  created_at DateTime @default(now()) @map("created_at") @db.Timestamptz(5)
+  updated_at DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(5)
+
+  @@map("staff")
+}
+
+enum StaffRole {
+  ADMIN
+  AUTHOR
 }
 
 enum Status {

@@ -45,12 +45,7 @@ export class GetNewsDto extends PaginationOptionalDto {
   @ApiProperty({ type: NewsSort, required: false })
   sort?: NewsSort;
 
-  @ApiProperty({
-    type: String,
-    required: false,
-    description:
-      "popular | hot | hech narsa jo'natilmasa hammasini tarib bilan oxirgi yaratilganlariga qarab ob keladi",
-  })
+  @ApiProperty({ type: String, required: false, description: 'admin | popular | hot' })
   @IsString()
   @IsOptional()
   type?: string;

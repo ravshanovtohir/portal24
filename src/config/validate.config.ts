@@ -14,6 +14,14 @@ class EnvironmentVariables {
   @IsNotEmpty()
   @IsPort()
   APP_PORT: string;
+
+  @IsNotEmpty()
+  @IsString()
+  OPENWEATHER_API_KEY: string;
+
+  @IsNotEmpty()
+  @IsString()
+  JWT_SECRET_KEY: string;
 }
 
 export function validate(config: Record<string, unknown>) {

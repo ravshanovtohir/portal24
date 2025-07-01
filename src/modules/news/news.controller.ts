@@ -25,8 +25,8 @@ import { diskStorage } from 'multer';
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
   @Get()
-  findAll(@Query() query: GetNewsDto) {
-    return this.newsService.findAll(query);
+  findAll(@Query() query: GetNewsDto, @HeadersValidation() headers: DeviceHeadersDto) {
+    return this.newsService.findAll(query, headers.lang);
   }
 
   @Get('category')
@@ -35,14 +35,19 @@ export class NewsController {
   }
 
   @Get(':slug')
-  async findOne(@Param('slug') slug: string) {
-    return this.newsService.findOne(slug);
+  async findOne(@Param('slug') slug: string, @HeadersValidation() headers: DeviceHeadersDto) {
+    return this.newsService.findOne(slug, headers.lang);
+  }
+
+  @Post()
+  async create(@Body() data: CreateNewsDto, @Req() request: IUser) {
+    return this.newsService.create(data, request?.id);
   }
 
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
-        destination: './uploads/insurance_partner_logo',
+        destination: './uploads/media',
         filename: (_, file, cb) => {
           const uuid = uuidv4();
           const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
@@ -50,19 +55,42 @@ export class NewsController {
         },
       }),
       fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg)$/)) {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|MP4|MOV|WebP|AVIF)$/)) {
           return cb(new BadRequestException('Неверный тип файла!'), false);
         }
         cb(null, true);
       },
     }),
   )
-  @Post()
-  async create(@Body() data: CreateNewsDto, @Req() request: IUser, @UploadedFile() file: Express.Multer.File) {
-    return this.newsService.create(data, request?.id, file);
+  @Post('save-media')
+  async saveMedia(@UploadedFile() file: Express.Multer.File) {
+    return this.newsService.saveMedia(file);
   }
 
-  @Patch('id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads/banner',
+        filename: (_, file, cb) => {
+          const uuid = uuidv4();
+          const filename = `${uuid}-${file.originalname.replace(/\s+/g, '')}`;
+          cb(null, filename);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (!file.mimetype.match(/\/(jpg|jpeg|png|svg|WebP|AVIF)$/)) {
+          return cb(new BadRequestException('Неверный тип файла!'), false);
+        }
+        cb(null, true);
+      },
+    }),
+  )
+  @Post('save-banner')
+  async uploadBanner(@UploadedFile() file: Express.Multer.File) {
+    return this.newsService.uploadBanner(file);
+  }
+
+  @Patch(':id')
   async update(@Param() param: ParamId, @Body() data: UpdateNewsDto) {
     return this.newsService.update(param.id, data);
   }

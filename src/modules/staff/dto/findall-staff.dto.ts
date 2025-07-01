@@ -7,7 +7,7 @@ import { prisma } from '@helpers';
 
 const categoryFields = Object.keys(prisma.staff.fields);
 
-class NewsFilter {
+class StaffFilter {
   @IsIn(categoryFields)
   @ApiProperty({ enum: categoryFields })
   column: string;
@@ -21,7 +21,7 @@ class NewsFilter {
   value: string;
 }
 
-class NewsSort {
+class StaffSort {
   @ApiProperty({ enum: categoryFields })
   @IsIn(categoryFields)
   column: string;
@@ -31,27 +31,17 @@ class NewsSort {
   value: Prisma.SortOrder;
 }
 
-export class GetNewsDto extends PaginationOptionalDto {
+export class GetStaffDto extends PaginationOptionalDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => NewsFilter)
-  @ApiProperty({ type: NewsFilter, isArray: true, required: false })
-  filters?: NewsFilter[];
+  @Type(() => StaffFilter)
+  @ApiProperty({ type: StaffFilter, isArray: true, required: false })
+  filters?: StaffFilter[];
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => NewsSort)
-  @ApiProperty({ type: NewsSort, required: false })
-  sort?: NewsSort;
-
-  @ApiProperty({
-    type: String,
-    required: false,
-    description:
-      "popular | hot | hech narsa jo'natilmasa hammasini tarib bilan oxirgi yaratilganlariga qarab ob keladi",
-  })
-  @IsString()
-  @IsOptional()
-  type?: string;
+  @Type(() => StaffSort)
+  @ApiProperty({ type: StaffSort, required: false })
+  sort?: StaffSort;
 }

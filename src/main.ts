@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './modules/app.module';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { BadRequestException, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as basicAuth from 'express-basic-auth';
 import { APP_PORT } from './config';
@@ -34,6 +34,11 @@ async function bootstrap() {
         transformOptions: {
           enableImplicitConversion: true,
         },
+        exceptionFactory: (errors) => {
+          const firstError = errors.find((error) => error.constraints);
+          const message = firstError ? Object.values(firstError.constraints!)[0] : 'Validation error';
+          return new BadRequestException(message);
+        },
       }),
     ));
 
@@ -51,7 +56,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Portal 24 API')
-    .setDescription('The Happy Tel API description')
+    .setDescription('The Portal24 API description')
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',

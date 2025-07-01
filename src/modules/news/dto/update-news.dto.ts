@@ -102,6 +102,14 @@ export class UpdateNewsDto {
   is_hot?: boolean;
 
   @ApiProperty({
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
+  @ApiProperty({
     description: "Teglar ro'yxati",
     example: ['metro', 'modernizatsiya', 'Toshkent'],
     type: [String],
