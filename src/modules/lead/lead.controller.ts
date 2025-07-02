@@ -3,7 +3,7 @@ import { LeadService } from './lead.service';
 import { CreateLeadDto, GetLeadDto } from './dto';
 import { ParamId } from '@enums';
 
-@Controller('lid')
+@Controller('lead')
 export class LidController {
   constructor(private readonly leadService: LeadService) {}
   @Get()

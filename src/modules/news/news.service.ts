@@ -227,6 +227,9 @@ export class NewsService {
         [`seo_title_${lang}`]: true,
         [`seo_description_${lang}`]: true,
       },
+      orderBy: {
+        order_number: 'asc',
+      },
     });
 
     return categories?.map((category) => {
