@@ -34,6 +34,11 @@ export class NewsController {
     return this.newsService.getCategories(headers.lang);
   }
 
+  @Get('category/:id')
+  async getOneCategory(@Param() param: ParamId, @HeadersValidation() headers: DeviceHeadersDto) {
+    return this.newsService.getOneCategory(param.id, headers.lang);
+  }
+
   @Get(':slug')
   async findOne(@Param('slug') slug: string, @HeadersValidation() headers: DeviceHeadersDto) {
     return this.newsService.findOne(slug, headers.lang);

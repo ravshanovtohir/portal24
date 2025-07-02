@@ -12,10 +12,16 @@ export class NewsService {
 
   async findAll(query: GetNewsDto, lang: string) {
     let select = {};
-    let where = {};
+    let where: any = {};
     let orderBy = {};
+
+    if (query?.category_id) {
+      where.category_id = query.category_id;
+    }
+
     if (query?.type === 'hot') {
       where = {
+        ...where,
         is_hot: true,
         status: Status.ACTIVE,
         category: {
@@ -28,6 +34,7 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`summary_${lang}`]: true,
         [`content_${lang}`]: true,
+        [`slug_${lang}`]: true,
         status: true,
         category: {
           select: {
@@ -44,6 +51,7 @@ export class NewsService {
       };
     } else if (query?.type === 'popular') {
       where = {
+        ...where,
         status: Status.ACTIVE,
         category: {
           status: Status.ACTIVE,
@@ -54,6 +62,7 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`summary_${lang}`]: true,
         [`content_${lang}`]: true,
+        [`slug_${lang}`]: true,
         status: true,
         category: {
           select: {
@@ -73,6 +82,7 @@ export class NewsService {
       };
     } else {
       where = {
+        ...where,
         status: Status.ACTIVE,
         category: {
           status: Status.ACTIVE,
@@ -83,6 +93,7 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`summary_${lang}`]: true,
         [`content_${lang}`]: true,
+        [`slug_${lang}`]: true,
         status: true,
         category: {
           select: {
@@ -118,6 +129,7 @@ export class NewsService {
         title: el?.[`title_${lang}`],
         summary: el?.[`summary_${lang}`],
         content: el?.[`content_${lang}`],
+        slug: el?.[`slug_${lang}`],
         status: el?.status,
         image_url: el?.image_url,
         category: {
@@ -130,10 +142,9 @@ export class NewsService {
         created_at: el?.created_at,
       };
     });
-
     return {
-      data,
       ...news,
+      data,
     };
 
     // return news?.data?.map((el: any) => {
@@ -159,19 +170,14 @@ export class NewsService {
   async findOne(slug: string, lang: string) {
     const post = await this.prisma.news.findFirst({
       where: {
-        OR: [
-          {
-            slug_uz: slug,
-            slug_ru: slug,
-            slug_en: slug,
-          },
-        ],
+        OR: [{ slug_uz: slug }, { slug_ru: slug }, { slug_en: slug }],
       },
       select: {
         id: true,
         [`title_${lang}`]: true,
         [`summary_${lang}`]: true,
         [`content_${lang}`]: true,
+        [`slug_${lang}`]: true,
         status: true,
         category: {
           select: {
@@ -179,7 +185,7 @@ export class NewsService {
             [`name_${lang}`]: true,
             [`title_${lang}`]: true,
             [`seo_title_${lang}`]: true,
-            [`description_${lang}`]: true,
+            [`seo_description_${lang}`]: true,
           },
         },
         image_url: true,
@@ -191,17 +197,24 @@ export class NewsService {
       },
     });
 
+    if (!post) {
+      throw new NotFoundException('!');
+    }
+
+    console.log(post);
+
     return {
       id: post?.id,
       title: post?.[`title_${lang}`],
+      slug: post?.[`slug_${lang}`],
       summary: post?.[`summary_${lang}`],
       content: post?.[`content_${lang}`],
       status: post?.status,
-      image: post?.image_url,
+      image_url: post?.image_url,
       category: {
         name: post?.category[`name_${lang}`],
         title: post?.category[`title_${lang}`],
-        seo_description: post?.category[`description_${lang}`],
+        seo_description: post?.category[`seo_description_${lang}`],
         seo_title: post?.category[`seo_title_${lang}`],
       },
       likes: post?.likes?.length,
@@ -230,10 +243,38 @@ export class NewsService {
         id: category?.id,
         name: category[`name_${lang}`],
         title: category[`title_${lang}`],
-        seo_description: category[`description_${lang}`],
+        seo_description: category[`seo_description_${lang}`],
         seo_title: category[`seo_title_${lang}`],
       };
     });
+  }
+
+  async getOneCategory(id: number, lang: string) {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id: id,
+        status: Status.ACTIVE,
+      },
+      select: {
+        id: true,
+        [`name_${lang}`]: true,
+        [`title_${lang}`]: true,
+        [`seo_title_${lang}`]: true,
+        [`seo_description_${lang}`]: true,
+      },
+    });
+
+    if (!category) {
+      throw new NotFoundException('!');
+    }
+
+    return {
+      id: category?.id,
+      name: category[`name_${lang}`],
+      title: category[`title_${lang}`],
+      seo_description: category[`seo_description_${lang}`],
+      seo_title: category[`seo_title_${lang}`],
+    };
   }
 
   async create(data: CreateNewsDto, authorId: number = 1) {

@@ -9,7 +9,6 @@ export class CreateLidDto {
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
-  @IsEmail()
   email: string;
 
   @ApiProperty({ type: String, required: true })
