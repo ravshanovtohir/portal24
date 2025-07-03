@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateDashboardDto } from './dto/create-dashboard.dto';
 import { UpdateDashboardDto } from './dto/update-dashboard.dto';
 import { PrismaService } from '@prisma';
-import { paginate } from '@helpers';
+import { formatDate, paginate } from '@helpers';
 import { GetNewsDto } from './dto';
 
 @Injectable()
@@ -65,9 +65,10 @@ export class DashboardService {
         is_hot: el?.is_hot,
         views: el?.views,
         comments: el?.comments?.length,
+        reading_time: Math.floor(el?.[`content_${lang}`]?.length / 200 || 0) || 0,
         author: el?.author,
         tags: el?.tags,
-        created_at: el?.created_at,
+        created_at: formatDate(el?.created_at, lang),
         updated_at: el?.updated_at,
       };
     });
@@ -143,7 +144,9 @@ export class DashboardService {
     return {
       ...news,
       likes: news.likes.length,
+      created_at: formatDate(news?.created_at, 'uz'),
       comment: news.comments.length,
+      reading_time: Math.floor(news?.content_uz?.length / 200 || 0),
     };
   }
 

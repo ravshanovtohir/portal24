@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
-import { paginate } from '@helpers';
+import { formatDate, paginate } from '@helpers';
 import { PostType, Status } from '@prisma/client';
 import { CategoryResponse, NewsResponse } from '@interfaces';
 import slugify from 'slugify';
@@ -129,15 +129,17 @@ export class NewsService {
           name: el?.category[`name_${lang}`],
         },
         likes: el?.likes?.length,
+        reading_time: el?.[`content_${lang}`]?.length / 200 || 0,
         views: el?.views,
         comments: el?.likes?.length,
-        created_at: el?.created_at,
+        created_at: formatDate(el?.created_at, lang),
       };
     });
+    console.log(data);
 
     return {
-      data,
       ...news,
+      data,
     };
 
     // return news?.data?.map((el: any) => {
@@ -195,6 +197,8 @@ export class NewsService {
       },
     });
 
+    console.log(post);
+
     return {
       id: post?.id,
       title: post?.[`title_${lang}`],
@@ -211,7 +215,8 @@ export class NewsService {
       likes: post?.likes?.length,
       views: post?.views,
       comments: post?.likes?.length,
-      created_at: post?.created_at,
+      reading_time: post?.[`content_${lang}`]?.length / 200 || 0,
+      // created_at: formatDate(post.created_at, lang),
     };
   }
 
