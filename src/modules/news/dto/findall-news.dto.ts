@@ -56,11 +56,20 @@ export class GetNewsDto extends PaginationOptionalDto {
   type?: string;
 
   @ApiProperty({
-    type: Number,
+    type: String,
     required: false,
+    description: 'video | photo | article',
   })
-  @Type(() => Number)
   @IsNumber()
   @IsOptional()
-  category_id?: string;
+  category_id?: number;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'video | photo | article',
+  })
+  @IsString()
+  @IsOptional()
+  post_type?: string;
 }

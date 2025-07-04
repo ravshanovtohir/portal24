@@ -52,6 +52,7 @@ model News {
   author_id   Int
   category_id Int
   views       Int       @default(0)
+  type        PostType? 
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
   author      Staff     @relation(fields: [author_id], references: [id])
@@ -129,15 +130,18 @@ model Category {
   @@map("category")
 }
 
-model Lid {
+model Lead {
   id           Int     @id @default(autoincrement())
   sender_name  String
   email        String?
   phone_number String
   message      String
+  status       Status?
 
   created_at DateTime  @default(now())
   updated_at DateTime? @updatedAt
+
+  @@map("lead")
 }
 
 model Weather {
@@ -176,4 +180,10 @@ enum StaffRole {
 enum Status {
   ACTIVE
   INACTIVE
+}
+
+enum PostType {
+  PHOTO
+  VIDEO
+  ARTICLE
 }

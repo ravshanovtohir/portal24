@@ -56,7 +56,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Portal 24 API')
-    .setDescription('The Happy Tel API description')
+    .setDescription('The Portal24 API description')
     .setVersion('1.0')
     .addBearerAuth({
       type: 'http',

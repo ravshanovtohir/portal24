@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, HttpStatus, Injectable, NotFoun
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
 import { paginate } from '@helpers';
-import { Status } from '@prisma/client';
+import { PostType, Status } from '@prisma/client';
 import { CategoryResponse, NewsResponse } from '@interfaces';
 import slugify from 'slugify';
 
@@ -15,10 +15,13 @@ export class NewsService {
     let where: any = {};
     let orderBy = {};
 
+    if (query?.post_type) {
+      where.type = query.post_type;
+    }
+
     if (query?.category_id) {
       where.category_id = query.category_id;
     }
-
     if (query?.type === 'hot') {
       where = {
         ...where,
@@ -307,6 +310,7 @@ export class NewsService {
         category_id: data?.category_id,
         author_id: authorId,
         is_hot: data?.is_hot,
+        type: (data?.type as PostType) ?? null,
       },
     });
 
@@ -348,6 +352,7 @@ export class NewsService {
       data: {
         ...data,
         status: (data.status as Status) ?? news.status,
+        type: (data.type as PostType) ?? news.type,
         // ca: data.category_id ? { connect: { id: data.category_id } } : undefined,
       },
     });
