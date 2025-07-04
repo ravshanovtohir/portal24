@@ -43,6 +43,11 @@ export class NewsService {
           select: {
             id: true,
             [`name_${lang}`]: true,
+            _count: {
+              select: {
+                news: true,
+              },
+            },
           },
         },
         image_url: true,
@@ -72,6 +77,11 @@ export class NewsService {
           select: {
             id: true,
             [`name_${lang}`]: true,
+            _count: {
+              select: {
+                news: true,
+              },
+            },
           },
         },
         image_url: true,
@@ -104,6 +114,11 @@ export class NewsService {
           select: {
             id: true,
             [`name_${lang}`]: true,
+            _count: {
+              select: {
+                news: true,
+              },
+            },
           },
         },
         image_url: true,
@@ -155,6 +170,7 @@ export class NewsService {
         category: {
           id: el?.category?.id,
           name: el?.category[`name_${lang}`],
+          news_count: el?.category?._count?.news,
         },
         likes: el?.likes?.length,
         reading_time: el?.[`content_${lang}`]?.length / 200 || 0,
@@ -257,19 +273,25 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`seo_title_${lang}`]: true,
         [`seo_description_${lang}`]: true,
+        _count: {
+          select: {
+            news: true,
+          },
+        },
       },
       orderBy: {
         order_number: 'asc',
       },
     });
 
-    return categories?.map((category) => {
+    return categories?.map((category: any) => {
       return {
         id: category?.id,
         name: category[`name_${lang}`],
         title: category[`title_${lang}`],
         seo_description: category[`seo_description_${lang}`],
         seo_title: category[`seo_title_${lang}`],
+        news_count: category?._count?.news,
       };
     });
   }
