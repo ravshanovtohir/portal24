@@ -108,7 +108,17 @@ export class UpdateNewsDto {
   })
   @IsOptional()
   @IsString()
-  type?: string;
+  content_type?: string;
+
+  @ApiProperty({
+    description: 'if type of post is video this is for link for youtube',
+    example: 'asdfasdd',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  youtube_id?: string;
 
   @ApiProperty({
     type: String,

@@ -71,5 +71,13 @@ export class GetNewsDto extends PaginationOptionalDto {
   })
   @IsString()
   @IsOptional()
-  post_type?: string;
+  content_type?: string;
+
+  @ApiProperty({
+    type: String,
+    required: false,
+    description: 'nimadirda',
+  })
+  @IsOptional()
+  search?: string;
 }

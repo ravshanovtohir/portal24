@@ -1,9 +1,8 @@
-import { BadRequestException, ConflictException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
-import { paginate } from '@helpers';
+import { formatDate, paginate } from '@helpers';
 import { PostType, Status } from '@prisma/client';
-import { CategoryResponse, NewsResponse } from '@interfaces';
 import slugify from 'slugify';
 
 @Injectable()
@@ -15,8 +14,9 @@ export class NewsService {
     let where: any = {};
     let orderBy = {};
 
-    if (query?.post_type) {
-      where.type = query.post_type;
+    if (query?.content_type) {
+      where.content_type = query.content_type;
+      // select.youtube_id = true;
     }
 
     if (query?.category_id) {
@@ -50,6 +50,7 @@ export class NewsService {
         views: true,
         comments: true,
         likes: true,
+        content_type: true,
         created_at: true,
       };
     } else if (query?.type === 'popular') {
@@ -78,6 +79,7 @@ export class NewsService {
         views: true,
         comments: true,
         likes: true,
+        content_type: true,
         created_at: true,
       };
       orderBy = {
@@ -109,12 +111,27 @@ export class NewsService {
         views: true,
         comments: true,
         likes: true,
+        content_type: true,
         created_at: true,
       };
       orderBy = {
         created_at: 'desc',
       };
       // throw new BadRequestException('Неверный тип для новостей!');
+    }
+
+    if (query?.search) {
+      const searchTerm = query.search;
+
+      where = {
+        ...where,
+        OR: [
+          { [`title_${lang}`]: { contains: searchTerm, mode: 'insensitive' } },
+          { [`summary_${lang}`]: { contains: searchTerm, mode: 'insensitive' } },
+          { [`content_${lang}`]: { contains: searchTerm, mode: 'insensitive' } },
+          { [`slug_${lang}`]: { contains: searchTerm, mode: 'insensitive' } },
+        ],
+      };
     }
 
     const news = await paginate('news', {
@@ -140,11 +157,15 @@ export class NewsService {
           name: el?.category[`name_${lang}`],
         },
         likes: el?.likes?.length,
+        reading_time: el?.[`content_${lang}`]?.length / 200 || 0,
         views: el?.views,
         comments: el?.likes?.length,
-        created_at: el?.created_at,
+        content_type: el?.content_type,
+        youtube_id: el?.youtube_id,
+        created_at: formatDate(el?.created_at, lang),
       };
     });
+
     return {
       ...news,
       data,
@@ -196,15 +217,11 @@ export class NewsService {
         views: true,
         comments: true,
         likes: true,
+        content_type: true,
+        youtube_id: true,
         created_at: true,
       },
     });
-
-    if (!post) {
-      throw new NotFoundException('!');
-    }
-
-    console.log(post);
 
     return {
       id: post?.id,
@@ -223,7 +240,9 @@ export class NewsService {
       likes: post?.likes?.length,
       views: post?.views,
       comments: post?.likes?.length,
-      created_at: post?.created_at,
+      reading_time: post?.[`content_${lang}`]?.length / 200 || 0,
+      youtube_id: post?.youtube_id,
+      // created_at: formatDate(new Date(post.created_at), lang),
     };
   }
 
@@ -238,6 +257,9 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`seo_title_${lang}`]: true,
         [`seo_description_${lang}`]: true,
+      },
+      orderBy: {
+        order_number: 'asc',
       },
     });
 
@@ -310,7 +332,7 @@ export class NewsService {
         category_id: data?.category_id,
         author_id: authorId,
         is_hot: data?.is_hot,
-        type: (data?.type as PostType) ?? null,
+        content_type: (data?.content_type as PostType) ?? null,
       },
     });
 
@@ -352,7 +374,7 @@ export class NewsService {
       data: {
         ...data,
         status: (data.status as Status) ?? news.status,
-        type: (data.type as PostType) ?? news.type,
+        content_type: (data.content_type as PostType) ?? news.content_type,
         // ca: data.category_id ? { connect: { id: data.category_id } } : undefined,
       },
     });
