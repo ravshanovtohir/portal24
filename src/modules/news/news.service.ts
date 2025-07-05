@@ -238,6 +238,7 @@ export class NewsService {
         created_at: true,
       },
     });
+    console.log(post);
 
     return {
       id: post?.id,
@@ -253,12 +254,19 @@ export class NewsService {
         seo_description: post?.category[`seo_description_${lang}`],
         seo_title: post?.category[`seo_title_${lang}`],
       },
+      tags: post?.tags,
       likes: post?.likes?.length,
       views: post?.views,
-      comments: post?.likes?.length,
+      comments: post?.comments?.length,
       reading_time: post?.[`content_${lang}`]?.length / 200 || 0,
       youtube_id: post?.youtube_id,
-      // created_at: formatDate(new Date(post.created_at), lang),
+      created_at: post.created_at.toLocaleString(lang, {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     };
   }
 
@@ -297,10 +305,10 @@ export class NewsService {
   }
 
   async getOneCategory(id: number, lang: string) {
-    const category = await this.prisma.category.findUnique({
+    const category: any = await this.prisma.category.findUnique({
       where: {
         id: id,
-        status: Status.ACTIVE,
+        // status: Status.ACTIVE,
       },
       select: {
         id: true,
@@ -308,6 +316,11 @@ export class NewsService {
         [`title_${lang}`]: true,
         [`seo_title_${lang}`]: true,
         [`seo_description_${lang}`]: true,
+        _count: {
+          select: {
+            news: true,
+          },
+        },
       },
     });
 
@@ -321,6 +334,7 @@ export class NewsService {
       title: category[`title_${lang}`],
       seo_description: category[`seo_description_${lang}`],
       seo_title: category[`seo_title_${lang}`],
+      news_count: category?._count.news,
     };
   }
 
