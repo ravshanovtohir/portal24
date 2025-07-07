@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateLeadDto, GetLeadDto } from './dto';
-import { paginate } from '@helpers';
+import { formatDate, paginate } from '@helpers';
 import { PrismaService } from '@prisma';
 import { Status } from '@prisma/client';
 
@@ -19,10 +19,27 @@ export class LeadService {
         email: true,
         phone_number: true,
         message: true,
+        status: true,
         created_at: true,
       },
     });
-    return leads;
+
+    const data = leads.data.map((lead) => {
+      return {
+        id: lead?.id,
+        sender_name: lead?.sender_name,
+        email: lead?.email,
+        phone_number: lead?.phone_number,
+        message: lead?.message,
+        status: lead?.status,
+        created_at: formatDate(lead?.created_at, 'ru'),
+      };
+    });
+
+    return {
+      ...leads,
+      data,
+    };
   }
 
   async findOne(id: number) {
@@ -43,7 +60,10 @@ export class LeadService {
     if (!lead) {
       throw new NotFoundException('Лид с указанным идентификатором не найден!');
     }
-    return lead;
+    return {
+      ...lead,
+      created_at: formatDate(lead.created_at, 'ru'),
+    };
   }
 
   async create(data: CreateLeadDto) {
@@ -53,6 +73,7 @@ export class LeadService {
         email: data.email,
         phone_number: data.phone_number,
         message: data.message,
+        status: Status.ACTIVE,
       },
     });
     return 'Лид успешно создана!';

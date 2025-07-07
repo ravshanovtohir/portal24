@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { GetNewsDto, CreateNewsDto, UpdateNewsDto, CreateLikeDto, CreateCommentDto } from './dto';
 import { PrismaService } from '@prisma';
 import { formatDate, paginate } from '@helpers';
@@ -56,6 +56,8 @@ export class NewsService {
         comments: true,
         likes: true,
         content_type: true,
+        youtube_id: true,
+        comment_available: true,
         created_at: true,
       };
     } else if (query?.type === 'popular') {
@@ -90,6 +92,8 @@ export class NewsService {
         comments: true,
         likes: true,
         content_type: true,
+        youtube_id: true,
+        comment_available: true,
         created_at: true,
       };
       orderBy = {
@@ -127,6 +131,8 @@ export class NewsService {
         comments: true,
         likes: true,
         content_type: true,
+        youtube_id: true,
+        comment_available: true,
         created_at: true,
       };
       orderBy = {
@@ -178,6 +184,7 @@ export class NewsService {
         comments: el?.likes?.length,
         content_type: el?.content_type,
         youtube_id: el?.youtube_id,
+        comment_available: el?.comment_available,
         created_at: formatDate(el?.created_at, lang),
       };
     });
@@ -235,10 +242,10 @@ export class NewsService {
         likes: true,
         content_type: true,
         youtube_id: true,
+        comment_available: true,
         created_at: true,
       },
     });
-    console.log(post);
 
     return {
       id: post?.id,
@@ -260,6 +267,7 @@ export class NewsService {
       comments: post?.comments?.length,
       reading_time: post?.[`content_${lang}`]?.length / 200 || 0,
       youtube_id: post?.youtube_id,
+      comment_available: post?.comment_available,
       created_at: post.created_at.toLocaleString(lang, {
         month: 'long',
         day: 'numeric',
@@ -405,12 +413,21 @@ export class NewsService {
     //     throw new ConflictException('Bu slug allaqachon ishlatilgan');
     //   }
     // }
+
+    if (
+      (news.content_type === PostType.VIDEO || data.content_type === PostType.VIDEO) &&
+      data?.youtube_id?.trim() === ''
+    ) {
+      throw new BadRequestException('Если тип контента - видео, требуется youtube_id!');
+    }
+
     await this.prisma.news.update({
       where: { id },
       data: {
         ...data,
         status: (data.status as Status) ?? news.status,
         content_type: (data.content_type as PostType) ?? news.content_type,
+        youtube_id: data?.youtube_id,
         // ca: data.category_id ? { connect: { id: data.category_id } } : undefined,
       },
     });
@@ -469,12 +486,22 @@ export class NewsService {
     });
   }
 
-  async createComment(createCommentDto: CreateCommentDto, userId: number) {
+  async createComment(data: CreateCommentDto, userId: number) {
+    const post = await this.prisma.news.findUnique({
+      where: {
+        id: data.news_id,
+      },
+    });
+
+    if (!post.comment_available) {
+      throw new BadRequestException('Написать комментарий недоступно для этого поста!');
+    }
+
     return this.prisma.comment.create({
       data: {
-        content: createCommentDto.content,
+        content: data.content,
         user_id: userId,
-        news_id: createCommentDto.news_id,
+        news_id: data.news_id,
       },
       include: { user: { select: { id: true, email: true } } },
     });

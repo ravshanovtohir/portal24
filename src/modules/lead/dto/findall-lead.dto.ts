@@ -44,4 +44,9 @@ export class GetLeadDto extends PaginationOptionalDto {
   @Type(() => LidSort)
   @ApiProperty({ type: LidSort, required: false })
   sort?: LidSort;
+
+  @ApiProperty({ type: String, required: false, example: 'ACTIVE', description: 'status' })
+  @IsOptional()
+  @IsString()
+  status?: string;
 }

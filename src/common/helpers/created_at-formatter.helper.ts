@@ -1,4 +1,4 @@
-export function formatDate(el: Date, lang: string) {
+export function formatDate(el: Date, lang: string = 'uz') {
   return el.toLocaleString(lang, {
     month: 'long',
     day: 'numeric',
