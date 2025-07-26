@@ -1,8 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { GetCategoryDto, CreateCategoryDto, UpdateCategoryDto } from './dto';
-import { HeadersValidation } from '@decorators';
-import { DeviceHeadersDto, ParamId } from '@enums';
+import { ParamId } from '@enums';
 
 @Controller('category')
 export class CategoryController {

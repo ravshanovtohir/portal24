@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { UtilitiesDataService } from './utilities-data.service';
 import { HeadersValidation } from '@decorators';
 import { DeviceHeadersDto } from '@enums';

@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { ParameterObject } from '@nestjs/swagger/dist/interfaces/open-api-spec.interface';
-import { IsEnum, IsString } from 'class-validator';
+import { IsEnum } from 'class-validator';
 
 enum Lang {
   uz = 'uz',

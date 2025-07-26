@@ -1,5 +1,5 @@
 import { type Prisma, type PrismaClient } from '@prisma/client';
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { Models } from '@enums';
 import { FilterService } from '@helpers';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
